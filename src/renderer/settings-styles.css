@@ -1,0 +1,257 @@
+/* Custom Font */
+@font-face {
+    font-family: 'Open24Display';
+    src: url('../../Open-24-Display-Font/Open 24 Display St.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Theme Variables */
+:root {
+    --accent-color: #00c8ff;
+    --accent-glow: rgba(0, 200, 255, 0.6);
+    --accent-dim: rgba(0, 200, 255, 0.3);
+    --accent-border: rgba(0, 200, 255, 0.1);
+}
+
+[data-theme="red"] {
+    --accent-color: #ff3333;
+    --accent-glow: rgba(255, 51, 51, 0.6);
+    --accent-dim: rgba(255, 51, 51, 0.3);
+    --accent-border: rgba(255, 51, 51, 0.1);
+}
+
+[data-theme="blue"] {
+    --accent-color: #4d94ff;
+    --accent-glow: rgba(77, 148, 255, 0.6);
+    --accent-dim: rgba(77, 148, 255, 0.3);
+    --accent-border: rgba(77, 148, 255, 0.1);
+}
+
+[data-theme="yellow"] {
+    --accent-color: #ffd700;
+    --accent-glow: rgba(255, 215, 0, 0.6);
+    --accent-dim: rgba(255, 215, 0, 0.3);
+    --accent-border: rgba(255, 215, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Settings Window */
+.settings-window {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-y: auto;
+}
+
+/* Settings Header */
+.settings-header {
+    padding: 30px;
+    text-align: center;
+    border-bottom: 2px solid var(--accent-border);
+}
+
+.settings-header h1 {
+    font-size: 32px;
+    color: var(--accent-color);
+    font-weight: 600;
+    text-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Settings Content */
+.settings-content {
+    padding: 30px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Settings Section */
+.settings-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--accent-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.settings-section h2 {
+    font-size: 20px;
+    color: var(--accent-color);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.section-description {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* Time Picker Styles */
+.time-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.time-input label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+}
+
+.time-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hour-select,
+.minute-select,
+.period-select {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: 'Open24Display', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.hour-select,
+.period-select {
+    width: 70px;
+}
+
+.minute-select {
+    width: 70px;
+}
+
+.hour-select:hover,
+.minute-select:hover,
+.period-select:hover {
+    border-color: var(--accent-dim);
+}
+
+.hour-select:focus,
+.minute-select:focus,
+.period-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.time-separator {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--accent-color);
+    font-family: 'Open24Display', monospace;
+}
+
+/* Theme Switcher */
+.theme-switcher {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+
+.theme-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.theme-btn.active {
+    border-color: #fff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.theme-btn[data-theme="cyan"] {
+    background: linear-gradient(135deg, #000, #00c8ff);
+}
+
+.theme-btn[data-theme="red"] {
+    background: linear-gradient(135deg, #000, #ff3333);
+}
+
+.theme-btn[data-theme="blue"] {
+    background: linear-gradient(135deg, #000, #4d94ff);
+}
+
+.theme-btn[data-theme="yellow"] {
+    background: linear-gradient(135deg, #000, #ffd700);
+}
+
+/* Save Button */
+.save-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent-border);
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    color: var(--accent-color);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.save-btn:hover {
+    background: var(--accent-dim);
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+.save-btn.success {
+    background: rgba(0, 255, 0, 0.2);
+    border-color: #0f0;
+    color: #0f0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+}
+
+/* Scrollbar Styling */
+.settings-window::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-window::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.settings-window::-webkit-scrollbar-thumb {
+    background: var(--accent-dim);
+    border-radius: 4px;
+}
+
+.settings-window::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}

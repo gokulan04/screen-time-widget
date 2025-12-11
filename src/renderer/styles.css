@@ -96,18 +96,16 @@ body {
     -webkit-app-region: drag;
 }
 
-.admin-badge {
+.app-logo {
     display: flex;
     align-items: center;
-    gap: 2px;
-    font-size: 6px;
-    color: var(--accent-color);
     -webkit-app-region: no-drag;
 }
 
-.admin-icon {
-    font-size: 8px;
-    filter: drop-shadow(0 0 2px var(--accent-glow));
+.app-icon {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 0 3px var(--accent-glow));
 }
 
 .title-buttons {
@@ -118,8 +116,8 @@ body {
 
 .help-btn,
 .close-btn,
-.refresh-btn,
-.expand-btn {
+.expand-btn,
+.settings-btn {
     width: 14px;
     height: 14px;
     background: transparent;
@@ -133,12 +131,13 @@ body {
     border-radius: 50%;
     transition: all 0.2s;
     font-weight: 600;
+    -webkit-app-region: no-drag;
 }
 
 .help-btn:hover,
 .close-btn:hover,
-.refresh-btn:hover,
-.expand-btn:hover {
+.expand-btn:hover,
+.settings-btn:hover {
     color: var(--accent-color);
     background: var(--accent-border);
 }
@@ -244,52 +243,6 @@ body {
     text-shadow: 0 0 5px var(--accent-glow);
     opacity: 0.8;
     letter-spacing: 1px;
-}
-
-/* Theme Switcher */
-.theme-switcher {
-    position: absolute;
-    bottom: 6px;
-    right: 8px;
-    display: flex;
-    gap: 3px;
-    z-index: 50;
-}
-
-.theme-btn {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-}
-
-.theme-btn:hover {
-    transform: scale(1.1);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.theme-btn.active {
-    border-color: #fff;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
-
-.theme-btn[data-theme="cyan"] {
-    background: linear-gradient(135deg, #000, #00c8ff);
-}
-
-.theme-btn[data-theme="red"] {
-    background: linear-gradient(135deg, #000, #ff3333);
-}
-
-.theme-btn[data-theme="blue"] {
-    background: linear-gradient(135deg, #000, #4d94ff);
-}
-
-.theme-btn[data-theme="yellow"] {
-    background: linear-gradient(135deg, #000, #ffd700);
 }
 
 /* Loading Spinner */

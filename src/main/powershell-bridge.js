@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { app } = require('electron');
 const logger = require('./logger');
+const { loadSettings } = require('./settings-manager');
 
 /**
  * Executes the PowerShell script to fetch screen time data
@@ -68,9 +69,14 @@ function getScreenTimeData() {
 
         logger.info('Script found, executing PowerShell', { scriptPath });
 
-        // Execute PowerShell script
-        const command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "${scriptPath}"`;
-        logger.debug('PowerShell command', { command });
+        // Load settings for time range
+        const settings = loadSettings();
+
+        // Execute PowerShell script with time range parameters
+        let command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "${scriptPath}"`;
+        command += ` -StartTimeOfDay "${settings.startTime}"`;
+        command += ` -EndTimeOfDay "${settings.endTime}"`;
+        logger.debug('PowerShell command', { command, settings });
 
         const startTime = Date.now();
 
@@ -154,11 +160,12 @@ function getScreenTimeData() {
 
 /**
  * Executes the PowerShell script to fetch detailed screen time breakdown
+ * @param {string} dateString - Optional date string in YYYY-MM-DD format
  * @returns {Promise<Object>} Detailed breakdown data with sessions and breaks
  */
-function getScreenTimeBreakdown() {
+function getScreenTimeBreakdown(dateString = null) {
     return new Promise((resolve, reject) => {
-        logger.info('=== Starting PowerShell breakdown execution ===');
+        logger.info('=== Starting PowerShell breakdown execution ===', { dateString });
 
         // Determine the correct path to PowerShell script
         let scriptPath;
@@ -211,9 +218,17 @@ function getScreenTimeBreakdown() {
 
         logger.info('Breakdown script found, executing PowerShell', { scriptPath });
 
-        // Execute PowerShell script
-        const command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "${scriptPath}"`;
-        logger.debug('PowerShell breakdown command', { command });
+        // Load settings for time range
+        const settings = loadSettings();
+
+        // Execute PowerShell script with optional date parameter and time range
+        let command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "${scriptPath}"`;
+        if (dateString) {
+            command += ` -DateString "${dateString}"`;
+        }
+        command += ` -StartTimeOfDay "${settings.startTime}"`;
+        command += ` -EndTimeOfDay "${settings.endTime}"`;
+        logger.debug('PowerShell breakdown command', { command, dateString, settings });
 
         const startTime = Date.now();
 

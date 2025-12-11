@@ -1,11 +1,13 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, screen } = require('electron');
 const path = require('path');
 const { getScreenTimeData, getScreenTimeBreakdown } = require('./powershell-bridge');
+const { loadSettings, saveSettings } = require('./settings-manager');
 const logger = require('./logger');
 
 let mainWindow = null;
 let breakdownWindow = null;
 let helpWindow = null;
+let settingsWindow = null;
 let tray = null;
 
 function createWindow() {
@@ -123,6 +125,42 @@ function createHelpWindow() {
 
     helpWindow.on('closed', () => {
         helpWindow = null;
+    });
+}
+
+function createSettingsWindow() {
+    // Don't create a new window if one already exists
+    if (settingsWindow) {
+        settingsWindow.focus();
+        return;
+    }
+
+    // Get primary display dimensions
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { width, height } = primaryDisplay.workAreaSize;
+
+    // Create settings window
+    settingsWindow = new BrowserWindow({
+        width: 500,
+        height: 600,
+        x: Math.floor((width - 500) / 2),
+        y: Math.floor((height - 600) / 2),
+        frame: true,
+        resizable: false,
+        alwaysOnTop: false,
+        backgroundColor: '#000000',
+        webPreferences: {
+            preload: path.join(__dirname, '../preload/preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false
+        }
+    });
+
+    // Load the settings.html
+    settingsWindow.loadFile(path.join(__dirname, '../renderer/settings.html'));
+
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
     });
 }
 
@@ -280,16 +318,16 @@ function setupIPC() {
         }
     });
 
-    ipcMain.handle('get-screen-time-breakdown', async () => {
-        logger.info('=== IPC: get-screen-time-breakdown requested ===');
+    ipcMain.handle('get-screen-time-breakdown', async (event, dateString = null) => {
+        logger.info('=== IPC: get-screen-time-breakdown requested ===', { dateString });
         try {
-            const data = await getScreenTimeBreakdown();
+            const data = await getScreenTimeBreakdown(dateString);
             logger.info('IPC: Successfully retrieved breakdown data', data);
             return data;
         } catch (error) {
             logger.error('IPC: Error getting breakdown data', error);
             const errorResponse = {
-                date: new Date().toLocaleDateString(),
+                date: dateString || new Date().toLocaleDateString(),
                 totalScreenTime: '0 min',
                 totalBreakTime: '0 min',
                 activeSessions: [],
@@ -326,6 +364,34 @@ function setupIPC() {
 
     ipcMain.on('open-help-window', () => {
         createHelpWindow();
+    });
+
+    ipcMain.on('open-settings-window', () => {
+        createSettingsWindow();
+    });
+
+    ipcMain.handle('get-settings', async () => {
+        logger.info('=== IPC: get-settings requested ===');
+        try {
+            const settings = loadSettings();
+            logger.info('IPC: Successfully retrieved settings', settings);
+            return settings;
+        } catch (error) {
+            logger.error('IPC: Error getting settings', error);
+            return { startTime: '08:00 AM', endTime: '10:00 PM', theme: 'cyan' };
+        }
+    });
+
+    ipcMain.handle('save-settings', async (event, settings) => {
+        logger.info('=== IPC: save-settings requested ===', settings);
+        try {
+            const result = saveSettings(settings);
+            logger.info('IPC: Settings saved successfully', result);
+            return result;
+        } catch (error) {
+            logger.error('IPC: Error saving settings', error);
+            return { success: false, error: error.message };
+        }
     });
 }
 

@@ -1,3 +1,10 @@
+param(
+    [Parameter(Mandatory=$false)]
+    [string]$StartTimeOfDay = "08:00 AM",
+    [Parameter(Mandatory=$false)]
+    [string]$EndTimeOfDay = "10:00 PM"
+)
+
 function Format-Duration {
     param (
         [TimeSpan]$duration
@@ -14,6 +21,14 @@ function Format-Duration {
         return "$hours hr $minutes min"
     }
 }
+
+# Parse time of day parameters
+$startHourTime = [DateTime]::Parse($StartTimeOfDay)
+$endHourTime = [DateTime]::Parse($EndTimeOfDay)
+
+# Convert to TimeSpan for comparison
+$startTimeSpan = $startHourTime.TimeOfDay
+$endTimeSpan = $endHourTime.TimeOfDay
 
 # Get today's date range
 $StartTime = (Get-Date).Date
@@ -35,8 +50,12 @@ try {
     $lastLockTime = $null
 
     # Pair unlock → lock events, or unlock → now (if no lock yet)
+    # Apply time range filtering and trimming
     foreach ($event in $events) {
         if ($event.Id -eq 4801) {
+            # Unlock event
+            $eventTimeOfDay = $event.TimeCreated.TimeOfDay
+
             # Break calculation
             if ($lastLockTime) {
                 $breakDuration = $event.TimeCreated - $lastLockTime
@@ -47,17 +66,38 @@ try {
                 }
                 $lastLockTime = $null
             }
-            $unlockTime = $event.TimeCreated
+
+            # Only start tracking if unlock is before end time
+            if ($eventTimeOfDay -lt $endTimeSpan) {
+                $unlockTime = $event.TimeCreated
+
+                # If unlock is before start time, trim to start time
+                if ($eventTimeOfDay -lt $startTimeSpan) {
+                    $unlockTime = $unlockTime.Date.Add($startTimeSpan)
+                }
+            }
         }
         elseif ($event.Id -eq 4800 -and $unlockTime) {
+            # Lock event
             $lockTime = $event.TimeCreated
-            $duration = $lockTime - $unlockTime
-            $activeSessions += [PSCustomObject]@{
-                StartTime = $unlockTime
-                EndTime   = $lockTime
-                Duration  = $duration
+            $lockTimeOfDay = $lockTime.TimeOfDay
+
+            # If lock is after end time, trim to end time
+            if ($lockTimeOfDay -gt $endTimeSpan) {
+                $lockTime = $lockTime.Date.Add($endTimeSpan)
             }
-            $lastLockTime = $lockTime
+
+            # Only count session if it's within or overlaps the tracking window
+            if ($lockTime -gt $unlockTime) {
+                $duration = $lockTime - $unlockTime
+                $activeSessions += [PSCustomObject]@{
+                    StartTime = $unlockTime
+                    EndTime   = $lockTime
+                    Duration  = $duration
+                }
+            }
+
+            $lastLockTime = $event.TimeCreated
             $unlockTime = $null
         }
     }
@@ -65,11 +105,21 @@ try {
     # If the last unlock event has no matching lock, assume session is ongoing
     if ($unlockTime) {
         $now = Get-Date
-        $duration = $now - $unlockTime
-        $activeSessions += [PSCustomObject]@{
-            StartTime = $unlockTime
-            EndTime   = $now
-            Duration  = $duration
+        $nowTimeOfDay = $now.TimeOfDay
+
+        # If current time is after end time, trim to end time
+        if ($nowTimeOfDay -gt $endTimeSpan) {
+            $now = $now.Date.Add($endTimeSpan)
+        }
+
+        # Only add session if there's actual duration
+        if ($now -gt $unlockTime) {
+            $duration = $now - $unlockTime
+            $activeSessions += [PSCustomObject]@{
+                StartTime = $unlockTime
+                EndTime   = $now
+                Duration  = $duration
+            }
         }
     }
 

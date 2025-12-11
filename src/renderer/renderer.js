@@ -14,16 +14,13 @@ const errorText = document.getElementById('error-text');
 /** @type {HTMLElement | null} */
 const content = document.querySelector('.content');
 /** @type {HTMLElement | null} */
-const adminBadge = document.getElementById('admin-badge');
-/** @type {HTMLElement | null} */
 const adminWarning = document.getElementById('admin-warning');
 /** @type {HTMLElement | null} */
 const helpBtn = document.getElementById('help-btn');
 /** @type {HTMLElement | null} */
 const widgetContainer = document.querySelector('.widget-container');
-const themeButtons = document.querySelectorAll('.theme-btn');
 /** @type {HTMLElement | null} */
-const refreshBtn = document.getElementById('refresh-btn');
+const settingsBtn = document.getElementById('settings-btn');
 /** @type {HTMLElement | null} */
 const expandBtn = document.getElementById('expand-btn');
 
@@ -146,57 +143,23 @@ function showNoDataMessage() {
 }
 
 /**
- * Initialize theme system
+ * Load theme from settings
  */
-function initTheme() {
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'cyan';
-
-    // Apply saved theme
-    if (widgetContainer) {
-        widgetContainer.setAttribute('data-theme', savedTheme);
-    }
-
-    // Set active state on the correct button
-    themeButtons.forEach(btn => {
-        const btnTheme = btn.getAttribute('data-theme');
-        if (btnTheme === savedTheme) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
+async function loadTheme() {
+    try {
+        const settings = await window.electronAPI.getSettings();
+        if (widgetContainer && settings && settings.theme) {
+            widgetContainer.setAttribute('data-theme', settings.theme);
         }
-    });
-
-    // Add click listeners to theme buttons
-    themeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const theme = btn.getAttribute('data-theme');
-
-            // Update theme on container
-            if (widgetContainer && theme) {
-                widgetContainer.setAttribute('data-theme', theme);
-            }
-
-            // Update active state
-            themeButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Save preference
-            if (theme) {
-                localStorage.setItem('theme', theme);
-            }
-        });
-    });
+    } catch (error) {
+        console.error('Error loading theme:', error);
+        // Fallback to default theme
+        if (widgetContainer) {
+            widgetContainer.setAttribute('data-theme', 'cyan');
+        }
+    }
 }
 
-/**
- * Handle refresh button click
- */
-if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-        fetchScreenTimeData();
-    });
-}
 
 /**
  * Handle close button click
@@ -227,12 +190,10 @@ async function checkAdminStatus() {
         const isAdmin = await window.electronAPI.checkAdminStatus();
 
         if (isAdmin) {
-            // Running as admin - show badge
-            if (adminBadge) adminBadge.style.display = 'flex';
+            // Running as admin - hide warning
             if (adminWarning) adminWarning.style.display = 'none';
         } else {
             // NOT running as admin - show warning
-            if (adminBadge) adminBadge.style.display = 'none';
             if (adminWarning) adminWarning.style.display = 'flex';
         }
     } catch (error) {
@@ -261,11 +222,21 @@ if (expandBtn) {
 }
 
 /**
+ * Handle settings button click to open settings window
+ */
+if (settingsBtn) {
+    settingsBtn.addEventListener('click', () => {
+        // @ts-ignore - electronAPI is added via preload
+        window.electronAPI.openSettingsWindow();
+    });
+}
+
+/**
  * Initialize the widget
  */
-function init() {
-    // Initialize theme system
-    initTheme();
+async function init() {
+    // Load theme from settings
+    await loadTheme();
 
     // Check admin status
     checkAdminStatus();

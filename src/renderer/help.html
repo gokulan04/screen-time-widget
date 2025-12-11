@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup Help - Screen Time Widget</title>
+    <title>InZone - Setup Help</title>
     <link rel="stylesheet" href="help-styles.css">
 </head>
 <body>
@@ -58,12 +58,22 @@
     </div>
 
     <script>
-        // Apply theme from localStorage
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'cyan';
-            const helpWindow = document.querySelector('.help-window');
-            if (helpWindow) {
-                helpWindow.setAttribute('data-theme', savedTheme);
+        // Apply theme from settings
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const settings = await window.electronAPI.getSettings();
+                const savedTheme = (settings && settings.theme) || 'cyan';
+                const helpWindow = document.querySelector('.help-window');
+                if (helpWindow) {
+                    helpWindow.setAttribute('data-theme', savedTheme);
+                }
+            } catch (error) {
+                console.error('Error loading theme:', error);
+                // Fallback to default
+                const helpWindow = document.querySelector('.help-window');
+                if (helpWindow) {
+                    helpWindow.setAttribute('data-theme', 'cyan');
+                }
             }
         });
     </script>

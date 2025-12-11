@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screen Time Breakdown</title>
+    <title>InZone - Breakdown</title>
     <link rel="stylesheet" href="breakdown-styles.css">
 </head>
 <body>
@@ -11,6 +11,19 @@
         <!-- Header -->
         <div class="breakdown-header">
             <h1 id="breakdown-title">Screen Time Breakdown</h1>
+            <div class="date-picker-container">
+                <button class="calendar-btn" id="calendar-btn" title="Select Date">
+                    <span class="calendar-icon">📅</span>
+                </button>
+                <input type="date" class="date-input" id="date-picker" title="Select Date">
+            </div>
+        </div>
+
+        <!-- Week View Section -->
+        <div class="week-view-container">
+            <div class="week-days" id="week-days">
+                <!-- Day buttons will be inserted here by JavaScript -->
+            </div>
         </div>
 
         <!-- Summary Section -->

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InZone - Settings</title>
+    <link rel="stylesheet" href="settings-styles.css">
+</head>
+<body>
+    <div class="settings-window" data-theme="cyan">
+        <div class="settings-header">
+            <h1>Settings</h1>
+        </div>
+
+        <div class="settings-content">
+            <!-- Time Range Section -->
+            <div class="settings-section">
+                <h2>Screen Time Tracking Hours</h2>
+                <p class="section-description">Set the time range for tracking screen time and breaks</p>
+
+                <div class="time-input-group">
+                    <div class="time-input">
+                        <label for="start-hour">Start Time</label>
+                        <div class="time-picker">
+                            <select id="start-hour" class="hour-select"></select>
+                            <span class="time-separator">:</span>
+                            <select id="start-minute" class="minute-select">
+                                <option value="00">00</option>
+                                <option value="30">30</option>
+                            </select>
+                            <select id="start-period" class="period-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="time-input">
+                        <label for="end-hour">End Time</label>
+                        <div class="time-picker">
+                            <select id="end-hour" class="hour-select"></select>
+                            <span class="time-separator">:</span>
+                            <select id="end-minute" class="minute-select">
+                                <option value="00">00</option>
+                                <option value="30">30</option>
+                            </select>
+                            <select id="end-period" class="period-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Section -->
+            <div class="settings-section">
+                <h2>Theme</h2>
+                <p class="section-description">Choose your preferred color theme</p>
+
+                <div class="theme-switcher">
+                    <button class="theme-btn active" data-theme="cyan" title="Cyan Theme"></button>
+                    <button class="theme-btn" data-theme="red" title="Red Theme"></button>
+                    <button class="theme-btn" data-theme="blue" title="Blue Theme"></button>
+                    <button class="theme-btn" data-theme="yellow" title="Yellow Theme"></button>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button id="save-settings-btn" class="save-btn">Save Settings</button>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

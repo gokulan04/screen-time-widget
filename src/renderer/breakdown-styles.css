@@ -75,6 +75,9 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Header */
 .breakdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--accent-border);
@@ -85,6 +88,173 @@ body::-webkit-scrollbar-thumb:hover {
     color: var(--accent-color);
     font-weight: 600;
     text-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Date Picker Container */
+.date-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Calendar Button */
+.calendar-btn {
+    background: var(--accent-border);
+    border: 1px solid var(--accent-dim);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-btn:hover {
+    background: var(--accent-dim);
+    box-shadow: 0 0 15px var(--accent-glow);
+    transform: scale(1.05);
+}
+
+.calendar-icon {
+    font-size: 18px;
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+/* Date Input */
+.date-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--accent-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-input:hover,
+.date-input:focus {
+    border-color: var(--accent-dim);
+    background: rgba(255, 255, 255, 0.08);
+    outline: none;
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* Style the calendar icon in date input */
+.date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(0.8);
+    cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+    filter: invert(1) brightness(1.2);
+}
+
+/* Week View Container */
+.week-view-container {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid var(--accent-border);
+}
+
+.week-days {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-width: 80px;
+}
+
+.day-btn:hover {
+    background: var(--accent-border);
+    border-color: var(--accent-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.day-btn.active {
+    background: var(--accent-border);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.day-btn.today {
+    border-color: var(--accent-dim);
+}
+
+.day-btn.future {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.day-btn.future:hover {
+    transform: none;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.day-name {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.day-number {
+    font-family: 'Open24Display', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.day-btn.active .day-name,
+.day-btn.active .day-number {
+    opacity: 1;
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Responsive design for smaller windows */
+@media (max-width: 800px) {
+    .week-days {
+        gap: 8px;
+    }
+
+    .day-btn {
+        min-width: 60px;
+        padding: 12px 8px;
+    }
+
+    .day-name {
+        font-size: 10px;
+    }
+
+    .day-number {
+        font-size: 20px;
+    }
 }
 
 /* Summary Section */
