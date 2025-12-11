@@ -1,0 +1,60 @@
+{
+  "name": "screen-time-widget",
+  "version": "1.0.0",
+  "description": "A lightweight desktop widget to track daily screen time and breaks on Windows",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder build --win --x64",
+    "build:dir": "electron-builder build --win --x64 --dir"
+  },
+  "keywords": [
+    "screen-time",
+    "productivity",
+    "widget",
+    "electron",
+    "windows"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.screentimewidget",
+    "productName": "Screen Time Widget",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icons/icon-256.png",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "perMachine": true,
+      "installerSidebar": "assets/installer-sidebar.bmp",
+      "uninstallerSidebar": "assets/installer-sidebar.bmp",
+      "installerHeader": "assets/installer-header.bmp"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "logo.png",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "src/main/screen-time-data.ps1",
+      "src/main/screen-time-breakdown.ps1",
+      "logo.png",
+      "assets/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

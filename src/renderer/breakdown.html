@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Breakdown</title>
+    <link rel="stylesheet" href="breakdown-styles.css">
+</head>
+<body>
+    <div class="breakdown-window" data-theme="cyan">
+        <!-- Header -->
+        <div class="breakdown-header">
+            <h1 id="breakdown-title">Screen Time Breakdown</h1>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="breakdown-summary">
+            <div class="summary-item">
+                <span class="summary-label">Total Screen Time:</span>
+                <span class="summary-value" id="total-screen-time">0 min</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Total Break Time:</span>
+                <span class="summary-value" id="total-break-time">0 min</span>
+            </div>
+        </div>
+
+        <!-- Active Sessions Section -->
+        <div class="breakdown-section">
+            <h2>Active Sessions</h2>
+            <div class="table-container">
+                <table class="breakdown-table" id="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessions-tbody">
+                        <!-- Sessions will be inserted here -->
+                    </tbody>
+                </table>
+                <div class="no-data" id="no-sessions" style="display: none;">
+                    No active sessions recorded yet
+                </div>
+            </div>
+        </div>
+
+        <!-- Break Durations Section -->
+        <div class="breakdown-section">
+            <h2>Break Durations</h2>
+            <div class="table-container">
+                <table class="breakdown-table" id="breaks-table">
+                    <thead>
+                        <tr>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="breaks-tbody">
+                        <!-- Breaks will be inserted here -->
+                    </tbody>
+                </table>
+                <div class="no-data" id="no-breaks" style="display: none;">
+                    No breaks recorded yet
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="breakdown.js"></script>
+</body>
+</html>

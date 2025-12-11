@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Help - Screen Time Widget</title>
+    <link rel="stylesheet" href="help-styles.css">
+</head>
+<body>
+    <div class="help-window" data-theme="cyan">
+        <!-- Header -->
+        <div class="help-header">
+            <h1>Setup Required: Enable Audit Events</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="help-content">
+            <div class="help-section">
+                <p class="help-intro">Screen time tracking requires Windows Audit Logon Events to be enabled. If you're seeing "No activity tracked yet", follow these steps:</p>
+            </div>
+
+            <div class="help-section">
+                <h2>Step 1: Enable "Audit Logon Events"</h2>
+                <ol>
+                    <li>Press <kbd>Win</kbd> + <kbd>R</kbd>, type <code>secpol.msc</code>, press Enter</li>
+                    <li>Navigate to: <code>Local Policies → Audit Policy</code></li>
+                    <li>Double-click <strong>Audit Logon Events</strong></li>
+                    <li>Check both: <strong>Success</strong> and <strong>Failure</strong></li>
+                    <li>Click OK</li>
+                </ol>
+            </div>
+
+            <div class="help-section">
+                <h2>Step 2: Enable "Audit Other Logon/Logoff Events"</h2>
+                <ol>
+                    <li>Press <kbd>Win</kbd> + <kbd>R</kbd>, type <code>gpedit.msc</code>, press Enter</li>
+                    <li>Navigate to:<br><code>Computer Configuration → Windows Settings → Security Settings → Advanced Audit Policy Configuration</code></li>
+                    <li>Find and double-click <strong>Audit Other Logon/Logoff Events</strong></li>
+                    <li>Enable both <strong>Success</strong> and <strong>Failure</strong></li>
+                </ol>
+            </div>
+
+            <div class="help-section">
+                <h2>Step 3: Apply Changes</h2>
+                <p>Run Command Prompt as Admin and execute:</p>
+                <code class="help-code">gpupdate /force</code>
+            </div>
+
+            <div class="help-section">
+                <h2>Step 4: Run as Administrator</h2>
+                <p>Make sure to run this app as Administrator to read audit logs.</p>
+            </div>
+
+            <div class="help-note">
+                <strong>Note:</strong> Lock/unlock your computer after enabling these settings to start tracking.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Apply theme from localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'cyan';
+            const helpWindow = document.querySelector('.help-window');
+            if (helpWindow) {
+                helpWindow.setAttribute('data-theme', savedTheme);
+            }
+        });
+    </script>
+</body>
+</html>

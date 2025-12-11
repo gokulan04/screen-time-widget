@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Widget</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="widget-container" data-theme="cyan">
+        <!-- Title Bar (Draggable) -->
+        <div class="title-bar" id="title-bar">
+            <div class="admin-badge" id="admin-badge" style="display: none;" title="Running as Administrator">
+                <span class="admin-icon">🛡️</span>
+            </div>
+            <div class="title-buttons">
+                <button class="expand-btn" id="expand-btn" title="Show Breakdown">⊞</button>
+                <button class="refresh-btn" id="refresh-btn" title="Refresh">↻</button>
+                <button class="help-btn" id="help-btn" title="Setup Help">?</button>
+                <button class="close-btn" id="close-btn" title="Minimize to tray">&times;</button>
+            </div>
+        </div>
+
+        <!-- Admin Warning -->
+        <div class="admin-warning" id="admin-warning" style="display: none;">
+            <span class="warning-icon">⚠️</span>
+            <span class="warning-text">Run as Administrator required for tracking</span>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Screen Time Display - Main Focus -->
+            <div class="screen-time-main">
+                <div class="screen-time-label">SCREEN TIME</div>
+                <div class="screen-time-display" id="screen-time-value">0h 0m</div>
+            </div>
+
+            <!-- Break Time - Smaller -->
+            <div class="break-time-section">
+                <div class="break-time-item">
+                    <div class="break-label">BREAK</div>
+                    <div class="break-value" id="break-time-value">0m</div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="error-message" style="display: none;">
+                <span id="error-text"></span>
+            </div>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="theme-switcher">
+            <button class="theme-btn active" data-theme="cyan" title="Cyan Theme"></button>
+            <button class="theme-btn" data-theme="red" title="Red Theme"></button>
+            <button class="theme-btn" data-theme="blue" title="Blue Theme"></button>
+            <button class="theme-btn" data-theme="yellow" title="Yellow Theme"></button>
+        </div>
+
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

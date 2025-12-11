@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"e:\\projects\\screen-time-clean\\create-icon.ps1\")",
+      "Bash(if not exist \"e:\\projects\\screen-time-clean\\assets\\icons\" mkdir \"e:\\projects\\screen-time-clean\\assets\\icons\")",
+      "Bash(cmd /c:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(if exist node_modules rmdir /s /q node_modules)",
+      "Bash(if exist package-lock.json del package-lock.json)",
+      "Bash(npm install:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell \"Get-Process electron -ErrorAction SilentlyContinue | Select-Object Id, ProcessName\")",
+      "Bash(npx electron-builder:*)",
+      "Bash(powershell \"Get-Process | Where-Object {$_ProcessName -like ''*electron*'' -or $_ProcessName -like ''*node*''} | Select-Object Id, ProcessName, Path\")",
+      "Bash(powershell \"Get-Process | Where-Object {$_ProcessName -match ''7z|electron|builder''} | Select-Object Id, ProcessName, Path\")"
+    ]
+  }
+}
