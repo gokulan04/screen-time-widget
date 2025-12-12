@@ -44,6 +44,7 @@
     "files": [
       "src/**/*",
       "assets/**/*",
+      "Open-24-Display-Font/**/*",
       "logo.png",
       "package.json"
     ],
