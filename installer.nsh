@@ -2,7 +2,7 @@
 # This file customizes the installer/uninstaller messages
 
 # Custom uninstaller messages - Option 4: Human-friendly
-!define MUI_UNTEXT_WELCOME_INFO_TITLE "Saying Goodbye 👋"
+!define MUI_UNTEXT_WELCOME_INFO_TITLE "Saying Goodbye"
 !define MUI_UNTEXT_WELCOME_INFO_TEXT "We're sad to see you go, but we get it!$\r$\n$\r$\nBefore uninstalling, please make sure InZone is closed.$\r$\n$\r$\nThank you for trusting us with your screen time tracking. We wish you all the best!$\r$\n$\r$\nClick Uninstall when you're ready."
 
 # Uninstall confirm page
@@ -16,7 +16,7 @@
 # Uninstall finish page
 !define MUI_UNTEXT_FINISH_TITLE "Thanks for Being Part of Our Journey!"
 !define MUI_UNTEXT_FINISH_SUBTITLE "InZone has been successfully removed."
-!define MUI_UNTEXT_FINISH_INFO_TEXT "InZone has been uninstalled from your computer.$\r$\n$\r$\nWe hope it helped you stay productive. Wishing you the best on your journey ahead!$\r$\n$\r$\nIf you have feedback, we'd love to hear from you."
+!define MUI_UNTEXT_FINISH_INFO_TEXT "InZone has been uninstalled from your computer.$\r$\n$\r$\nWe hope it helped you stay productive."
 
 # Optional: Customize installer messages too (more welcoming)
 !define MUI_TEXT_WELCOME_INFO_TITLE "Welcome to InZone! 🎯"
