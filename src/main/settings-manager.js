@@ -3,15 +3,21 @@ const path = require('path');
 const { app } = require('electron');
 const logger = require('./logger');
 
-// Settings file path in user data directory
-const settingsPath = path.join(app.getPath('userData'), 'settings.json');
-
 // Default settings
 const defaultSettings = {
     startTime: '08:00 AM',
     endTime: '10:00 PM',
-    theme: 'cyan'
+    theme: 'cyan',
+    goal: 8 // Daily screen time goal in hours
 };
+
+/**
+ * Get the settings file path
+ * @returns {string} Path to settings file
+ */
+function getSettingsPath() {
+    return path.join(app.getPath('userData'), 'settings.json');
+}
 
 /**
  * Load settings from JSON file
@@ -19,6 +25,7 @@ const defaultSettings = {
  */
 function loadSettings() {
     try {
+        const settingsPath = getSettingsPath();
         logger.info('Loading settings from:', settingsPath);
 
         if (fs.existsSync(settingsPath)) {
@@ -45,6 +52,7 @@ function loadSettings() {
  */
 function saveSettings(settings) {
     try {
+        const settingsPath = getSettingsPath();
         logger.info('Saving settings to:', settingsPath);
         logger.info('Settings data:', settings);
 

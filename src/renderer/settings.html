@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:; font-src 'self';">
     <title>InZone - Settings</title>
     <link rel="stylesheet" href="settings-styles.css">
 </head>
@@ -50,6 +51,17 @@
                             </select>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Daily Goal Section -->
+            <div class="settings-section">
+                <h2>Daily Screen Time Goal</h2>
+                <p class="section-description">Set your target daily screen time in hours</p>
+
+                <div class="goal-input-group">
+                    <input type="number" id="goal-input" class="goal-input" min="1" max="24" step="0.5" value="8">
+                    <span class="goal-unit">hours</span>
                 </div>
             </div>
 

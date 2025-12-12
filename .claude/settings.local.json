@@ -15,7 +15,17 @@
       "Bash(powershell \"Get-Process electron -ErrorAction SilentlyContinue | Select-Object Id, ProcessName\")",
       "Bash(npx electron-builder:*)",
       "Bash(powershell \"Get-Process | Where-Object {$_ProcessName -like ''*electron*'' -or $_ProcessName -like ''*node*''} | Select-Object Id, ProcessName, Path\")",
-      "Bash(powershell \"Get-Process | Where-Object {$_ProcessName -match ''7z|electron|builder''} | Select-Object Id, ProcessName, Path\")"
+      "Bash(powershell \"Get-Process | Where-Object {$_ProcessName -match ''7z|electron|builder''} | Select-Object Id, ProcessName, Path\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"e:\\projects\\screen-time-clean\\convert-uninstaller-image.ps1\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(powershell:*)",
+      "Bash(npm start)",
+      "Bash(node -c:*)",
+      "Bash(node -e \"const {app} = require(''electron''); console.log(''app:'',typeof app);\")",
+      "Bash(\"dist/win-unpacked/InZone.exe\")"
     ]
   }
 }

@@ -53,13 +53,13 @@
 
 /* Settings Header */
 .settings-header {
-    padding: 30px;
+    padding: 20px;
     text-align: center;
     border-bottom: 2px solid var(--accent-border);
 }
 
 .settings-header h1 {
-    font-size: 32px;
+    font-size: 26px;
     color: var(--accent-color);
     font-weight: 600;
     text-shadow: 0 0 15px var(--accent-glow);
@@ -67,8 +67,8 @@
 
 /* Settings Content */
 .settings-content {
-    padding: 30px;
-    max-width: 450px;
+    padding: 20px;
+    max-width: 420px;
     margin: 0 auto;
 }
 
@@ -76,38 +76,38 @@
 .settings-section {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--accent-border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 30px;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
 }
 
 .settings-section h2 {
-    font-size: 20px;
+    font-size: 18px;
     color: var(--accent-color);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 600;
 }
 
 .section-description {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
-    margin-bottom: 20px;
-    line-height: 1.5;
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height: 1.4;
 }
 
 /* Time Picker Styles */
 .time-input-group {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
 .time-input label {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .time-picker {
@@ -123,8 +123,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     color: #fff;
-    padding: 10px 12px;
-    font-size: 16px;
+    padding: 8px 10px;
+    font-size: 15px;
     font-family: 'Open24Display', monospace;
     cursor: pointer;
     transition: all 0.2s;
@@ -160,6 +160,43 @@
     font-family: 'Open24Display', monospace;
 }
 
+/* Goal Input */
+.goal-input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+}
+
+.goal-input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 15px;
+    font-family: 'Open24Display', monospace;
+    width: 90px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.goal-input:hover {
+    border-color: var(--accent-dim);
+}
+
+.goal-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.goal-unit {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
 /* Theme Switcher */
 .theme-switcher {
     display: flex;
@@ -169,8 +206,8 @@
 }
 
 .theme-btn {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
@@ -207,12 +244,12 @@
 /* Save Button */
 .save-btn {
     width: 100%;
-    padding: 16px;
+    padding: 12px;
     background: var(--accent-border);
     border: 2px solid var(--accent-color);
     border-radius: 8px;
     color: var(--accent-color);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;

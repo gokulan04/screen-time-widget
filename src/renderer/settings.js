@@ -11,6 +11,9 @@ const endHourSelect = document.getElementById('end-hour');
 const endMinuteSelect = document.getElementById('end-minute');
 const endPeriodSelect = document.getElementById('end-period');
 
+// Goal input
+const goalInput = document.getElementById('goal-input');
+
 let currentSettings = null;
 
 /**
@@ -98,13 +101,19 @@ async function loadSettings() {
         endMinuteSelect.value = endTime.minute;
         endPeriodSelect.value = endTime.period;
 
+        // Set goal value
+        if (goalInput) {
+            goalInput.value = currentSettings.goal || 8;
+        }
+
     } catch (error) {
         console.error('Error loading settings:', error);
         // Use defaults if loading fails
         currentSettings = {
             startTime: '08:00 AM',
             endTime: '10:00 PM',
-            theme: 'cyan'
+            theme: 'cyan',
+            goal: 8
         };
     }
 }
@@ -125,7 +134,8 @@ async function saveSettings() {
                 endMinuteSelect.value,
                 endPeriodSelect.value
             ),
-            theme: currentSettings.theme
+            theme: currentSettings.theme,
+            goal: parseFloat(goalInput.value) || 8
         };
 
         console.log('Saving settings:', settings);

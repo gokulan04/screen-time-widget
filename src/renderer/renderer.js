@@ -23,9 +23,16 @@ const widgetContainer = document.querySelector('.widget-container');
 const settingsBtn = document.getElementById('settings-btn');
 /** @type {HTMLElement | null} */
 const expandBtn = document.getElementById('expand-btn');
+/** @type {HTMLElement | null} */
+const goalProgressFill = document.getElementById('goal-progress-fill');
+/** @type {HTMLElement | null} */
+const goalProgressBar = document.getElementById('goal-progress-bar');
+/** @type {HTMLElement | null} */
+const goalFlashMessage = document.getElementById('goal-flash-message');
 
 // State
 let isLoading = false;
+let currentGoal = 8; // Default goal in hours
 
 /**
  * Format duration for screen time display (e.g., "11:09" or "00:00")
@@ -113,6 +120,35 @@ function updateScreenTimeUI(data) {
         breakTimeValue.textContent = formatBreakTime(breakTimeMinutes);
     }
 
+    // Update goal progress bar
+    const goalMinutes = currentGoal * 60;
+    const progressPercent = Math.min((screenTimeMinutes / goalMinutes) * 100, 100);
+
+    if (goalProgressFill) {
+        const newWidth = `${progressPercent}%`;
+        const currentWidth = goalProgressFill.style.width;
+
+        // Only add shimmer effect if width is actually changing
+        if (currentWidth !== newWidth) {
+            goalProgressFill.classList.add('transitioning');
+            goalProgressFill.style.width = newWidth;
+
+            // Remove transitioning class after animation completes
+            setTimeout(() => {
+                goalProgressFill.classList.remove('transitioning');
+            }, 500); // Match transition duration
+        }
+    }
+
+    // Show flash message when goal is reached (100%)
+    if (progressPercent >= 100) {
+        if (goalProgressBar) goalProgressBar.style.display = 'none';
+        if (goalFlashMessage) goalFlashMessage.style.display = 'block';
+    } else {
+        if (goalProgressBar) goalProgressBar.style.display = 'block';
+        if (goalFlashMessage) goalFlashMessage.style.display = 'none';
+    }
+
     // Hide error message
     if (errorMessage) errorMessage.style.display = 'none';
 }
@@ -143,20 +179,28 @@ function showNoDataMessage() {
 }
 
 /**
- * Load theme from settings
+ * Load theme and goal from settings
  */
 async function loadTheme() {
     try {
         const settings = await window.electronAPI.getSettings();
-        if (widgetContainer && settings && settings.theme) {
-            widgetContainer.setAttribute('data-theme', settings.theme);
+        if (settings) {
+            // Apply theme
+            if (widgetContainer && settings.theme) {
+                widgetContainer.setAttribute('data-theme', settings.theme);
+            }
+            // Load goal setting
+            if (settings.goal) {
+                currentGoal = settings.goal;
+            }
         }
     } catch (error) {
-        console.error('Error loading theme:', error);
-        // Fallback to default theme
+        console.error('Error loading settings:', error);
+        // Fallback to default theme and goal
         if (widgetContainer) {
             widgetContainer.setAttribute('data-theme', 'cyan');
         }
+        currentGoal = 8;
     }
 }
 
@@ -244,6 +288,18 @@ async function init() {
         if (widgetContainer) {
             widgetContainer.setAttribute('data-theme', theme);
         }
+    });
+
+    // Listen for settings updates (e.g., goal changes) and refresh data
+    // @ts-ignore - electronAPI is added via preload
+    window.electronAPI.onSettingsUpdated((settings) => {
+        console.log('Settings updated, refreshing data...', settings);
+        // Update goal if changed
+        if (settings.goal) {
+            currentGoal = settings.goal;
+        }
+        // Refresh screen time data to update progress bar
+        fetchScreenTimeData();
     });
 
     // Check admin status

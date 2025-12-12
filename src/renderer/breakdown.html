@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:; font-src 'self';">
     <title>InZone - Breakdown</title>
     <link rel="stylesheet" href="breakdown-styles.css">
 </head>
@@ -25,6 +26,43 @@
             </div>
         </div>
 
+        <!-- Time Range Filter -->
+        <div class="time-range-filter">
+            <div class="time-inputs">
+                <div class="time-input-group">
+                    <label for="filter-start-hour">Start Time</label>
+                    <div class="time-picker">
+                        <select id="filter-start-hour" class="hour-select"></select>
+                        <span class="time-separator">:</span>
+                        <select id="filter-start-minute" class="minute-select">
+                            <option value="00">00</option>
+                            <option value="30">30</option>
+                        </select>
+                        <select id="filter-start-period" class="period-select">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="time-input-group">
+                    <label for="filter-end-hour">End Time</label>
+                    <div class="time-picker">
+                        <select id="filter-end-hour" class="hour-select"></select>
+                        <span class="time-separator">:</span>
+                        <select id="filter-end-minute" class="minute-select">
+                            <option value="00">00</option>
+                            <option value="30">30</option>
+                        </select>
+                        <select id="filter-end-period" class="period-select">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="reset-filter-btn" id="reset-filter-btn">Reset</button>
+            </div>
+        </div>
+
         <!-- Summary Section -->
         <div class="breakdown-summary">
             <div class="summary-item">
@@ -37,46 +75,49 @@
             </div>
         </div>
 
-        <!-- Active Sessions Section -->
-        <div class="breakdown-section">
-            <h2>Active Sessions</h2>
-            <div class="table-container">
-                <table class="breakdown-table" id="sessions-table">
-                    <thead>
-                        <tr>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sessions-tbody">
-                        <!-- Sessions will be inserted here -->
-                    </tbody>
-                </table>
-                <div class="no-data" id="no-sessions" style="display: none;">
-                    No active sessions recorded yet
+        <!-- Tables Row Container -->
+        <div class="tables-row">
+            <!-- Active Sessions Section -->
+            <div class="breakdown-section">
+                <h2>Active Sessions</h2>
+                <div class="table-container">
+                    <table class="breakdown-table" id="sessions-table">
+                        <thead>
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessions-tbody">
+                            <!-- Sessions will be inserted here -->
+                        </tbody>
+                    </table>
+                    <div class="no-data" id="no-sessions" style="display: none;">
+                        No active sessions recorded yet
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Break Durations Section -->
-        <div class="breakdown-section">
-            <h2>Break Durations</h2>
-            <div class="table-container">
-                <table class="breakdown-table" id="breaks-table">
-                    <thead>
-                        <tr>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody id="breaks-tbody">
-                        <!-- Breaks will be inserted here -->
-                    </tbody>
-                </table>
-                <div class="no-data" id="no-breaks" style="display: none;">
-                    No breaks recorded yet
+            <!-- Break Durations Section -->
+            <div class="breakdown-section">
+                <h2>Break Durations</h2>
+                <div class="table-container">
+                    <table class="breakdown-table" id="breaks-table">
+                        <thead>
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breaks-tbody">
+                            <!-- Breaks will be inserted here -->
+                        </tbody>
+                    </table>
+                    <div class="no-data" id="no-breaks" style="display: none;">
+                        No breaks recorded yet
+                    </div>
                 </div>
             </div>
         </div>

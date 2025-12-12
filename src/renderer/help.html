@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:; font-src 'self';">
     <title>InZone - Setup Help</title>
     <link rel="stylesheet" href="help-styles.css">
 </head>
@@ -57,32 +58,6 @@
         </div>
     </div>
 
-    <script>
-        // Apply theme from settings
-        window.addEventListener('DOMContentLoaded', async () => {
-            const helpWindow = document.querySelector('.help-window');
-
-            try {
-                const settings = await window.electronAPI.getSettings();
-                const savedTheme = (settings && settings.theme) || 'cyan';
-                if (helpWindow) {
-                    helpWindow.setAttribute('data-theme', savedTheme);
-                }
-            } catch (error) {
-                console.error('Error loading theme:', error);
-                // Fallback to default
-                if (helpWindow) {
-                    helpWindow.setAttribute('data-theme', 'cyan');
-                }
-            }
-
-            // Listen for theme changes from settings window
-            window.electronAPI.onThemeChanged((theme) => {
-                if (helpWindow) {
-                    helpWindow.setAttribute('data-theme', theme);
-                }
-            });
-        });
-    </script>
+    <script src="help.js"></script>
 </body>
 </html>

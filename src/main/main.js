@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, screen } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { getScreenTimeData, getScreenTimeBreakdown } = require('./powershell-bridge');
 const { loadSettings, saveSettings } = require('./settings-manager');
 const logger = require('./logger');
@@ -17,7 +18,7 @@ function createWindow() {
 
     // Calculate position for bottom-right corner with 20px margin
     const windowWidth = 200;
-    const windowHeight = 140;
+    const windowHeight = 160;
     const x = width - windowWidth - 20;
     const y = height - windowHeight - 20;
 
@@ -171,61 +172,46 @@ function createTray() {
 
         // Check if running in packaged app
         if (app.isPackaged) {
-            const fs = require('fs');
-            // Try .ico format first (better for Windows)
-            const iconIcoPaths = [
-                path.join(process.resourcesPath, 'app.asar.unpacked', 'assets', 'icons', 'icon.ico'),
-                path.join(process.resourcesPath, 'app', 'assets', 'icons', 'icon.ico'),
-                path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
-            ];
+            // For packaged app, use icon from unpacked assets
+            const iconIco = path.join(process.resourcesPath, 'app.asar.unpacked', 'assets', 'icons', 'icon.ico');
+            const iconPng = path.join(process.resourcesPath, 'app.asar.unpacked', 'assets', 'icons', 'icon.png');
 
-            // Then try PNG format
-            const iconPngPaths = [
-                path.join(process.resourcesPath, 'app.asar.unpacked', 'assets', 'icons', 'tray-icon.png'),
-                path.join(process.resourcesPath, 'app', 'assets', 'icons', 'tray-icon.png'),
-                path.join(process.resourcesPath, 'assets', 'icons', 'tray-icon.png')
-            ];
-
-            // Try .ico files first
-            for (const tryPath of iconIcoPaths) {
-                if (fs.existsSync(tryPath)) {
-                    iconPath = tryPath;
-                    break;
-                }
-            }
-
-            // If no .ico found, try PNG
-            if (!iconPath) {
-                for (const tryPath of iconPngPaths) {
-                    if (fs.existsSync(tryPath)) {
-                        iconPath = tryPath;
-                        break;
-                    }
-                }
-            }
-
-            // Final fallback to logo.png
-            if (!iconPath) {
-                iconPath = path.join(process.resourcesPath, 'logo.png');
-            }
-        } else {
-            // Development mode - try .ico first, then PNG, then logo.png
-            const fs = require('fs');
-            const iconIco = path.join(__dirname, '../../assets/icons/icon.ico');
-            const iconPng = path.join(__dirname, '../../assets/icons/tray-icon.png');
-            const logoPath = path.join(__dirname, '../../logo.png');
+            logger.info('Packaged app - checking icon paths');
+            logger.info('ICO path: ' + iconIco + ' exists: ' + fs.existsSync(iconIco));
+            logger.info('PNG path: ' + iconPng + ' exists: ' + fs.existsSync(iconPng));
 
             if (fs.existsSync(iconIco)) {
                 iconPath = iconIco;
             } else if (fs.existsSync(iconPng)) {
                 iconPath = iconPng;
             } else {
-                iconPath = logoPath;
+                logger.error('No tray icon found in packaged app!');
+                return; // Don't create tray if icon is missing
+            }
+        } else {
+            // Development mode
+            const iconIco = path.join(__dirname, '../../assets/icons/icon.ico');
+            const iconPng = path.join(__dirname, '../../assets/icons/icon.png');
+
+            if (fs.existsSync(iconIco)) {
+                iconPath = iconIco;
+            } else if (fs.existsSync(iconPng)) {
+                iconPath = iconPng;
+            } else {
+                logger.error('No tray icon found in dev mode!');
+                return;
             }
         }
 
-        logger.info('Using tray icon:', iconPath);
+        logger.info('Creating tray with icon: ' + iconPath);
         tray = new Tray(iconPath);
+
+        if (!tray) {
+            logger.error('Failed to create tray!');
+            return;
+        }
+
+        logger.info('Tray created successfully');
 
         const contextMenu = Menu.buildFromTemplate([
             {
@@ -261,7 +247,7 @@ function createTray() {
             }
         ]);
 
-        tray.setToolTip('Screen Time Widget');
+        tray.setToolTip('InZone - Screen Time Tracker');
         tray.setContextMenu(contextMenu);
 
         tray.on('click', () => {
@@ -318,10 +304,10 @@ function setupIPC() {
         }
     });
 
-    ipcMain.handle('get-screen-time-breakdown', async (event, dateString = null) => {
-        logger.info('=== IPC: get-screen-time-breakdown requested ===', { dateString });
+    ipcMain.handle('get-screen-time-breakdown', async (event, dateString = null, startTime = null, endTime = null) => {
+        logger.info('=== IPC: get-screen-time-breakdown requested ===', { dateString, startTime, endTime });
         try {
-            const data = await getScreenTimeBreakdown(dateString);
+            const data = await getScreenTimeBreakdown(dateString, startTime, endTime);
             logger.info('IPC: Successfully retrieved breakdown data', data);
             return data;
         } catch (error) {
@@ -394,6 +380,12 @@ function setupIPC() {
                     window.webContents.send('theme-changed', settings.theme);
                 });
                 logger.info('IPC: Theme change broadcasted to all windows', settings.theme);
+            }
+
+            // Broadcast settings update to main window to refresh data (especially for goal changes)
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('settings-updated', settings);
+                logger.info('IPC: Settings update broadcasted to main window');
             }
 
             return result;

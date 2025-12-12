@@ -13,10 +13,19 @@ const weekDaysContainer = document.getElementById('week-days');
 const datePickerContainer = document.getElementById('date-picker-container');
 const selectedDateText = document.getElementById('selected-date-text');
 const datePicker = document.getElementById('date-picker');
+const filterStartHour = document.getElementById('filter-start-hour');
+const filterStartMinute = document.getElementById('filter-start-minute');
+const filterStartPeriod = document.getElementById('filter-start-period');
+const filterEndHour = document.getElementById('filter-end-hour');
+const filterEndMinute = document.getElementById('filter-end-minute');
+const filterEndPeriod = document.getElementById('filter-end-period');
+const resetFilterBtn = document.getElementById('reset-filter-btn');
 
 // State
 let selectedDate = null; // Current selected date (YYYY-MM-DD)
 let weekDates = []; // Array of 7 Date objects for current week
+let currentStartTime = '08:00 AM'; // Current filter start time (12-hour format)
+let currentEndTime = '10:00 PM'; // Current filter end time (12-hour format)
 
 /**
  * Get the current week's dates (Sunday to Saturday)
@@ -109,17 +118,12 @@ function initializeWeekView() {
             button.disabled = true;
         }
 
-        // Create day name and number elements
+        // Create day name element
         const dayName = document.createElement('span');
         dayName.className = 'day-name';
         dayName.textContent = getDayName(date);
 
-        const dayNumber = document.createElement('span');
-        dayNumber.className = 'day-number';
-        dayNumber.textContent = date.getDate();
-
         button.appendChild(dayName);
-        button.appendChild(dayNumber);
 
         // Add click handler
         if (!isFuture(date)) {
@@ -307,23 +311,180 @@ function showLoadingState() {
 }
 
 /**
+ * Initialize hour dropdowns (12, 1-11)
+ */
+function initializeHourDropdowns() {
+    const hours = ['12', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+
+    hours.forEach(hour => {
+        const startOption = document.createElement('option');
+        startOption.value = hour;
+        startOption.textContent = hour;
+        if (filterStartHour) filterStartHour.appendChild(startOption);
+
+        const endOption = document.createElement('option');
+        endOption.value = hour;
+        endOption.textContent = hour;
+        if (filterEndHour) filterEndHour.appendChild(endOption);
+    });
+}
+
+/**
+ * Parse time string (e.g., "08:00 AM") into components
+ * @param {string} timeStr - Time string to parse
+ * @returns {Object} Parsed time components
+ */
+function parseTimeString(timeStr) {
+    const parts = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (parts) {
+        // Convert hour to number and back to string to remove leading zeros
+        const hourNum = parseInt(parts[1], 10);
+        return {
+            hour: String(hourNum),
+            minute: parts[2],
+            period: parts[3].toUpperCase()
+        };
+    }
+    // Default fallback
+    return { hour: '8', minute: '00', period: 'AM' };
+}
+
+/**
+ * Format time components into string
+ * @param {string} hour - Hour (1-12)
+ * @param {string} minute - Minute (00 or 30)
+ * @param {string} period - AM or PM
+ * @returns {string} Formatted time string
+ */
+function formatTimeString(hour, minute, period) {
+    const paddedHour = String(hour).padStart(2, '0');
+    return `${paddedHour}:${minute} ${period}`;
+}
+
+/**
+ * Convert 24-hour time (HH:mm) to 12-hour format (hh:mm AM/PM)
+ * @param {string} time24 - Time in HH:mm format
+ * @returns {string} Time in 12-hour format
+ */
+function convertTo12HourFormat(time24) {
+    const [hours, minutes] = time24.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
+/**
+ * Initialize time range filters from settings
+ */
+async function initializeTimeFilters() {
+    try {
+        // @ts-ignore - electronAPI is added via preload
+        const settings = await window.electronAPI.getSettings();
+
+        if (settings && settings.startTime && settings.endTime) {
+            // Parse and set start time
+            const startTime = parseTimeString(settings.startTime);
+            if (filterStartHour) filterStartHour.value = startTime.hour;
+            if (filterStartMinute) filterStartMinute.value = startTime.minute;
+            if (filterStartPeriod) filterStartPeriod.value = startTime.period;
+
+            // Parse and set end time
+            const endTime = parseTimeString(settings.endTime);
+            if (filterEndHour) filterEndHour.value = endTime.hour;
+            if (filterEndMinute) filterEndMinute.value = endTime.minute;
+            if (filterEndPeriod) filterEndPeriod.value = endTime.period;
+
+            // Store current filter times in 12-hour format
+            currentStartTime = settings.startTime;
+            currentEndTime = settings.endTime;
+        }
+    } catch (error) {
+        console.error('Error loading time filter settings:', error);
+    }
+}
+
+/**
+ * Convert 12-hour time (hh:mm AM/PM) to 24-hour format (HH:mm)
+ * @param {string} time12 - Time in 12-hour format
+ * @returns {string} Time in HH:mm format
+ */
+function convertTo24HourFormat(time12) {
+    const match = time12.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return '08:00';
+
+    let [, hours, minutes, period] = match;
+    hours = parseInt(hours);
+
+    if (period.toUpperCase() === 'PM' && hours !== 12) {
+        hours += 12;
+    } else if (period.toUpperCase() === 'AM' && hours === 12) {
+        hours = 0;
+    }
+
+    return `${String(hours).padStart(2, '0')}:${minutes}`;
+}
+
+/**
+ * Handle apply filter button click
+ */
+async function handleApplyFilter() {
+    if (!filterStartHour || !filterStartMinute || !filterStartPeriod ||
+        !filterEndHour || !filterEndMinute || !filterEndPeriod) return;
+
+    // Format time from select dropdowns
+    currentStartTime = formatTimeString(
+        filterStartHour.value,
+        filterStartMinute.value,
+        filterStartPeriod.value
+    );
+    currentEndTime = formatTimeString(
+        filterEndHour.value,
+        filterEndMinute.value,
+        filterEndPeriod.value
+    );
+
+    // Reload data with new time range
+    await loadBreakdownData(selectedDate, currentStartTime, currentEndTime);
+}
+
+/**
+ * Handle reset filter button click
+ */
+async function handleResetFilter() {
+    // Reset to settings defaults
+    await initializeTimeFilters();
+
+    // Reload data with default time range
+    await loadBreakdownData(selectedDate, currentStartTime, currentEndTime);
+}
+
+/**
  * Load and display breakdown data for a specific date
  * @param {string} dateString - Optional YYYY-MM-DD format, defaults to today
  */
-async function loadBreakdownData(dateString = null) {
+async function loadBreakdownData(dateString = null, startTime = null, endTime = null) {
     try {
         // Show loading state
         showLoadingState();
 
-        // @ts-ignore - electronAPI is added via preload
-        const data = await window.electronAPI.getScreenTimeBreakdown(dateString);
+        // Use current filter times if not provided (already in 12-hour format)
+        const filterStartTime = startTime || currentStartTime;
+        const filterEndTime = endTime || currentEndTime;
 
-        // Apply theme from settings
-        const settings = await window.electronAPI.getSettings();
-        const savedTheme = (settings && settings.theme) || 'cyan';
-        if (breakdownWindow) {
-            breakdownWindow.setAttribute('data-theme', savedTheme);
-        }
+        console.log('Loading breakdown data:', {
+            dateString,
+            filterStartTime,
+            filterEndTime
+        });
+
+        // @ts-ignore - electronAPI is added via preload
+        const data = await window.electronAPI.getScreenTimeBreakdown(
+            dateString,
+            filterStartTime,
+            filterEndTime
+        );
+
+        console.log('Received breakdown data:', data);
 
         // Update summary
         if (totalScreenTimeEl) {
@@ -380,10 +541,55 @@ async function loadBreakdownData(dateString = null) {
 }
 
 // Initialize when window loads
-window.addEventListener('DOMContentLoaded', () => {
-    initializeWeekView();
-    initializeDatePicker();
-    loadBreakdownData(selectedDate); // Load today's data by default
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Apply theme immediately to prevent flash
+        const settings = await window.electronAPI.getSettings();
+        const savedTheme = (settings && settings.theme) || 'cyan';
+        if (breakdownWindow) {
+            breakdownWindow.setAttribute('data-theme', savedTheme);
+        }
+
+        initializeHourDropdowns();
+        initializeWeekView();
+        initializeDatePicker();
+        await initializeTimeFilters();
+
+        console.log('Breakdown initialization:', {
+            selectedDate,
+            currentStartTime,
+            currentEndTime
+        });
+
+        await loadBreakdownData(selectedDate); // Load today's data by default
+
+        // Add event listeners for automatic filter application on time change
+        if (filterStartHour) {
+            filterStartHour.addEventListener('change', handleApplyFilter);
+        }
+        if (filterStartMinute) {
+            filterStartMinute.addEventListener('change', handleApplyFilter);
+        }
+        if (filterStartPeriod) {
+            filterStartPeriod.addEventListener('change', handleApplyFilter);
+        }
+        if (filterEndHour) {
+            filterEndHour.addEventListener('change', handleApplyFilter);
+        }
+        if (filterEndMinute) {
+            filterEndMinute.addEventListener('change', handleApplyFilter);
+        }
+        if (filterEndPeriod) {
+            filterEndPeriod.addEventListener('change', handleApplyFilter);
+        }
+
+        // Add event listener for reset button
+        if (resetFilterBtn) {
+            resetFilterBtn.addEventListener('click', handleResetFilter);
+        }
+    } catch (error) {
+        console.error('Error during breakdown initialization:', error);
+    }
 
     // Listen for theme changes from settings window
     // @ts-ignore - electronAPI is added via preload

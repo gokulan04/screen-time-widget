@@ -163,9 +163,9 @@ function getScreenTimeData() {
  * @param {string} dateString - Optional date string in YYYY-MM-DD format
  * @returns {Promise<Object>} Detailed breakdown data with sessions and breaks
  */
-function getScreenTimeBreakdown(dateString = null) {
+function getScreenTimeBreakdown(dateString = null, startTime = null, endTime = null) {
     return new Promise((resolve, reject) => {
-        logger.info('=== Starting PowerShell breakdown execution ===', { dateString });
+        logger.info('=== Starting PowerShell breakdown execution ===', { dateString, startTime, endTime });
 
         // Determine the correct path to PowerShell script
         let scriptPath;
@@ -218,25 +218,27 @@ function getScreenTimeBreakdown(dateString = null) {
 
         logger.info('Breakdown script found, executing PowerShell', { scriptPath });
 
-        // Load settings for time range
+        // Load settings for time range (use as defaults if not provided)
         const settings = loadSettings();
+        const finalStartTime = startTime || settings.startTime;
+        const finalEndTime = endTime || settings.endTime;
 
         // Execute PowerShell script with optional date parameter and time range
         let command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File "${scriptPath}"`;
         if (dateString) {
             command += ` -DateString "${dateString}"`;
         }
-        command += ` -StartTimeOfDay "${settings.startTime}"`;
-        command += ` -EndTimeOfDay "${settings.endTime}"`;
-        logger.debug('PowerShell breakdown command', { command, dateString, settings });
+        command += ` -StartTimeOfDay "${finalStartTime}"`;
+        command += ` -EndTimeOfDay "${finalEndTime}"`;
+        logger.debug('PowerShell breakdown command', { command, dateString, finalStartTime, finalEndTime });
 
-        const startTime = Date.now();
+        const execStartTime = Date.now();
 
         exec(command, {
             maxBuffer: 1024 * 1024,
             timeout: 30000 // 30 second timeout
         }, (error, stdout, stderr) => {
-            const duration = Date.now() - startTime;
+            const duration = Date.now() - execStartTime;
 
             logger.info('PowerShell breakdown execution completed', {
                 duration: `${duration}ms`,
