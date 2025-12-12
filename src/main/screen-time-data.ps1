@@ -56,13 +56,34 @@ try {
             # Unlock event
             $eventTimeOfDay = $event.TimeCreated.TimeOfDay
 
-            # Break calculation
+            # Break calculation - only record breaks within tracking hours
             if ($lastLockTime) {
-                $breakDuration = $event.TimeCreated - $lastLockTime
-                $breaks += [PSCustomObject]@{
-                    StartTime = $lastLockTime
-                    EndTime   = $event.TimeCreated
-                    Duration  = $breakDuration
+                $breakStart = $lastLockTime
+                $breakEnd = $event.TimeCreated
+                $breakStartTimeOfDay = $breakStart.TimeOfDay
+                $breakEndTimeOfDay = $breakEnd.TimeOfDay
+
+                # Check if break overlaps with tracking window
+                $breakOverlapsWindow = ($breakEndTimeOfDay -gt $startTimeSpan) -and ($breakStartTimeOfDay -lt $endTimeSpan)
+
+                if ($breakOverlapsWindow) {
+                    # Trim break to tracking window boundaries
+                    if ($breakStartTimeOfDay -lt $startTimeSpan) {
+                        $breakStart = $breakStart.Date.Add($startTimeSpan)
+                    }
+                    if ($breakEndTimeOfDay -gt $endTimeSpan) {
+                        $breakEnd = $breakEnd.Date.Add($endTimeSpan)
+                    }
+
+                    # Only add break if there's actual duration after trimming
+                    if ($breakEnd -gt $breakStart) {
+                        $breakDuration = $breakEnd - $breakStart
+                        $breaks += [PSCustomObject]@{
+                            StartTime = $breakStart
+                            EndTime   = $breakEnd
+                            Duration  = $breakDuration
+                        }
+                    }
                 }
                 $lastLockTime = $null
             }
