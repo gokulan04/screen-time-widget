@@ -387,6 +387,15 @@ function setupIPC() {
         try {
             const result = saveSettings(settings);
             logger.info('IPC: Settings saved successfully', result);
+
+            // Broadcast theme change to all windows
+            if (settings && settings.theme) {
+                BrowserWindow.getAllWindows().forEach(window => {
+                    window.webContents.send('theme-changed', settings.theme);
+                });
+                logger.info('IPC: Theme change broadcasted to all windows', settings.theme);
+            }
+
             return result;
         } catch (error) {
             logger.error('IPC: Error saving settings', error);

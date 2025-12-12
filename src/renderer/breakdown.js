@@ -384,4 +384,12 @@ window.addEventListener('DOMContentLoaded', () => {
     initializeWeekView();
     initializeDatePicker();
     loadBreakdownData(selectedDate); // Load today's data by default
+
+    // Listen for theme changes from settings window
+    // @ts-ignore - electronAPI is added via preload
+    window.electronAPI.onThemeChanged((theme) => {
+        if (breakdownWindow) {
+            breakdownWindow.setAttribute('data-theme', theme);
+        }
+    });
 });

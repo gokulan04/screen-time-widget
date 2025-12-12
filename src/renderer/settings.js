@@ -190,4 +190,23 @@ if (saveSettingsBtn) {
 }
 
 // Initialize when window loads
-window.addEventListener('DOMContentLoaded', initializeSettingsPage);
+window.addEventListener('DOMContentLoaded', () => {
+    initializeSettingsPage();
+
+    // Listen for theme changes from other windows (though unlikely for settings window)
+    window.electronAPI.onThemeChanged((theme) => {
+        if (settingsWindow) {
+            settingsWindow.setAttribute('data-theme', theme);
+        }
+        // Update current settings
+        currentSettings.theme = theme;
+        // Update active button
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === theme) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    });
+});

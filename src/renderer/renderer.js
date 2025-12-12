@@ -238,14 +238,22 @@ async function init() {
     // Load theme from settings
     await loadTheme();
 
+    // Listen for theme changes from settings window
+    // @ts-ignore - electronAPI is added via preload
+    window.electronAPI.onThemeChanged((theme) => {
+        if (widgetContainer) {
+            widgetContainer.setAttribute('data-theme', theme);
+        }
+    });
+
     // Check admin status
     checkAdminStatus();
 
     // Fetch screen time data
     fetchScreenTimeData();
 
-    // Auto-refresh screen time every 10 minutes
-    setInterval(fetchScreenTimeData, 600000);
+    // Auto-refresh screen time every 5 minutes
+    setInterval(fetchScreenTimeData, 300000);
 }
 
 // Initialize on load

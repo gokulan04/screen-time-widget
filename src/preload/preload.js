@@ -12,5 +12,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     openHelpWindow: () => ipcRenderer.send('open-help-window'),
     openSettingsWindow: () => ipcRenderer.send('open-settings-window'),
     getSettings: () => ipcRenderer.invoke('get-settings'),
-    saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings)
+    saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+    onThemeChanged: (callback) => ipcRenderer.on('theme-changed', (event, theme) => callback(theme))
 });
