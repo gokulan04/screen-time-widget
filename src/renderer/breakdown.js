@@ -10,7 +10,8 @@ const sessionsTable = document.getElementById('sessions-table');
 const breaksTable = document.getElementById('breaks-table');
 const breakdownWindow = document.querySelector('.breakdown-window');
 const weekDaysContainer = document.getElementById('week-days');
-const calendarBtn = document.getElementById('calendar-btn');
+const datePickerContainer = document.getElementById('date-picker-container');
+const selectedDateText = document.getElementById('selected-date-text');
 const datePicker = document.getElementById('date-picker');
 
 // State
@@ -156,6 +157,7 @@ function updateActiveDay(dateString) {
 async function handleDayClick(dateString) {
     selectedDate = dateString;
     updateActiveDay(dateString);
+    updateSelectedDateText(dateString);
     await loadBreakdownData(dateString);
 
     // Sync calendar input
@@ -177,10 +179,43 @@ function initializeDatePicker() {
     // Set current selected date
     if (selectedDate) {
         datePicker.value = selectedDate;
+        updateSelectedDateText(selectedDate);
     }
 
     // Add change event listener
     datePicker.addEventListener('change', handleCalendarChange);
+
+    // Add click handler to date picker container to open date picker
+    if (datePickerContainer) {
+        datePickerContainer.addEventListener('click', () => {
+            if (datePicker) {
+                datePicker.showPicker();
+            }
+        });
+    }
+}
+
+/**
+ * Update the selected date text display
+ * @param {string} dateString - YYYY-MM-DD format
+ */
+function updateSelectedDateText(dateString) {
+    if (!selectedDateText) return;
+
+    const date = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    if (date.getTime() === today.getTime()) {
+        selectedDateText.textContent = 'Today';
+    } else {
+        selectedDateText.textContent = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
 }
 
 /**
@@ -198,6 +233,7 @@ async function handleCalendarChange(event) {
     // Update selected date and load data
     selectedDate = selectedDateString;
     updateActiveDay(selectedDate);
+    updateSelectedDateText(selectedDate);
     await loadBreakdownData(selectedDate);
 }
 
@@ -225,11 +261,60 @@ function updateWeekViewToDate(targetDate) {
 }
 
 /**
+ * Show skeleton loading state
+ */
+function showLoadingState() {
+    // Show skeleton rows in sessions table
+    if (sessionsTbody) {
+        sessionsTbody.innerHTML = `
+            <tr class="skeleton-row">
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+            </tr>
+            <tr class="skeleton-row">
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+            </tr>
+            <tr class="skeleton-row">
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+            </tr>
+        `;
+        if (sessionsTable) sessionsTable.style.display = 'table';
+        if (noSessions) noSessions.style.display = 'none';
+    }
+
+    // Show skeleton rows in breaks table
+    if (breaksTbody) {
+        breaksTbody.innerHTML = `
+            <tr class="skeleton-row">
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+            </tr>
+            <tr class="skeleton-row">
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+                <td><div class="skeleton-text"></div></td>
+            </tr>
+        `;
+        if (breaksTable) breaksTable.style.display = 'table';
+        if (noBreaks) noBreaks.style.display = 'none';
+    }
+}
+
+/**
  * Load and display breakdown data for a specific date
  * @param {string} dateString - Optional YYYY-MM-DD format, defaults to today
  */
 async function loadBreakdownData(dateString = null) {
     try {
+        // Show loading state
+        showLoadingState();
+
         // @ts-ignore - electronAPI is added via preload
         const data = await window.electronAPI.getScreenTimeBreakdown(dateString);
 
@@ -238,12 +323,6 @@ async function loadBreakdownData(dateString = null) {
         const savedTheme = (settings && settings.theme) || 'cyan';
         if (breakdownWindow) {
             breakdownWindow.setAttribute('data-theme', savedTheme);
-        }
-
-        // Update title with date
-        if (breakdownTitle) {
-            const displayDate = data.date || (dateString ? new Date(dateString).toLocaleDateString() : 'Today');
-            breakdownTitle.textContent = `Screen Time Breakdown - ${displayDate}`;
         }
 
         // Update summary
