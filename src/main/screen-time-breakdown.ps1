@@ -105,15 +105,13 @@ foreach ($event in $events) {
             $lastLockTime = $null
         }
 
-        # Only start tracking if unlock is before end time
-        if ($eventTimeOfDay -lt $endTimeSpan) {
+        # Only track unlocks that happen within the tracking window
+        # Ignore unlocks before start time - don't trim them to start time
+        if ($eventTimeOfDay -ge $startTimeSpan -and $eventTimeOfDay -lt $endTimeSpan) {
+            # Unlock is within tracking hours - track from actual unlock time
             $unlockTime = $event.TimeCreated
-
-            # If unlock is before start time, trim to start time
-            if ($eventTimeOfDay -lt $startTimeSpan) {
-                $unlockTime = $unlockTime.Date.Add($startTimeSpan)
-            }
         }
+        # If unlock is before start time or after end time, ignore it completely
     }
     elseif ($event.Id -eq 4800 -and $unlockTime) {
         # Lock event
