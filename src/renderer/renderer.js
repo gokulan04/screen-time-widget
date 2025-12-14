@@ -34,6 +34,60 @@ const goalFlashMessage = document.getElementById('goal-flash-message');
 let isLoading = false;
 let currentGoal = 8; // Default goal in hours
 
+// Message System State
+/** @type {string} */
+let username = 'there'; // Default fallback
+let lastMessageTime = 0; // Track when last message was shown
+let welcomeShownToday = false; // Track if welcome message shown today
+const MESSAGE_INTERVAL = 600000; // 10 minutes in milliseconds
+
+// Welcome messages (shown once per day with username)
+const WELCOME_MESSAGES = [
+    "Welcome back, {name}! 🌟",
+    "Good to see you, {name}! 👋",
+    "Hello {name}! Ready for a productive day? ✨",
+    "Hey {name}! Let's stay mindful today! 💪"
+];
+
+// Message pools by progress percentage (no username)
+const MESSAGES = {
+    '20-49': [
+        "You're off to a great start! 🚀",
+        "Productive vibes! ✨",
+        "Keep the momentum going! 💪"
+    ],
+    '50-60': [
+        "Halfway there! 📊",
+        "Time is ticking! ⏰",
+        "Still in the safe zone! 🌱"
+    ],
+    '60-70': [
+        "Solid progress! 👍",
+        "You're cruising! ✨",
+        "Digital balance looking good! ⚖️"
+    ],
+    '70-80': [
+        "Maybe time for a stretch? 🧘",
+        "Eyes need a break soon! 👀",
+        "Real world is calling! 🌍"
+    ],
+    '80-90': [
+        "Getting close to your limit! ⚡",
+        "Time to wrap things up? 📱➡️📴",
+        "Screen time limit approaching! ⚠️"
+    ],
+    '90-99': [
+        "Almost at your limit! 🛑",
+        "Time to log off soon! 👋",
+        "Final stretch! Make it count! ⏱️"
+    ],
+    '100+': [
+        "Goal reached! Time to unplug! 🎯",
+        "Screen time limit hit! 🚦",
+        "Well done staying mindful! ✅"
+    ]
+};
+
 /**
  * Format duration for screen time display (e.g., "11:09" or "00:00")
  * @param {number} totalMinutes - Total minutes to format
@@ -57,9 +111,189 @@ function formatBreakTime(totalMinutes) {
 }
 
 /**
- * Fetch and display screen time data
+ * Get appropriate message category based on progress percentage
+ * @param {number} progressPercent - Progress percentage (0-100+)
+ * @returns {string | null} Message category key or null if below 20%
  */
-async function fetchScreenTimeData() {
+function getMessageCategory(progressPercent) {
+    if (progressPercent < 20) return null; // No message before 20%
+    if (progressPercent < 50) return '20-49';
+    if (progressPercent < 60) return '50-60';
+    if (progressPercent < 70) return '60-70';
+    if (progressPercent < 80) return '70-80';
+    if (progressPercent < 90) return '80-90';
+    if (progressPercent < 100) return '90-99';
+    return '100+';
+}
+
+/**
+ * Get random welcome message with username
+ * @returns {string} Personalized welcome message
+ */
+function getWelcomeMessage() {
+    const randomIndex = Math.floor(Math.random() * WELCOME_MESSAGES.length);
+    const message = WELCOME_MESSAGES[randomIndex];
+    // Replace {name} placeholder with actual username
+    return message.replace('{name}', username);
+}
+
+/**
+ * Get random message from category (no personalization)
+ * @param {string} category - Message category
+ * @returns {string} Progress message
+ */
+function getRandomMessage(category) {
+    const messages = MESSAGES[category];
+    if (!messages || messages.length === 0) return '';
+
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    return messages[randomIndex];
+}
+
+/**
+ * Check if enough time has passed to show a new message
+ * For 20-49% range: show once (static message)
+ * For 50%+: show every 10 minutes
+ * @param {number} progressPercent - Current progress percentage
+ * @returns {boolean} True if message should be shown
+ */
+function shouldShowMessage(progressPercent) {
+    // If no message has been shown yet (app just started), show one
+    if (lastMessageTime === 0) return true;
+
+    // For 20-49%, show static message once (but always return true to keep it visible)
+    if (progressPercent >= 20 && progressPercent < 50) {
+        // Show once - don't rotate to new messages, but keep showing the same one
+        return true;
+    }
+
+    // For 50%+, check if 10 minutes have passed
+    const now = Date.now();
+    const timeSinceLastMessage = now - lastMessageTime;
+    return timeSinceLastMessage >= MESSAGE_INTERVAL;
+}
+
+/**
+ * Show message (persistent or temporary)
+ * @param {string} message - Message to display
+ * @param {boolean} autoHide - Whether to auto-hide after 3 seconds
+ */
+function showPersistentMessage(message, autoHide = false) {
+    if (!goalFlashMessage) {
+        console.error('goalFlashMessage element not found!');
+        return;
+    }
+
+    // Update message text
+    const messageSpan = goalFlashMessage.querySelector('span');
+    if (messageSpan) {
+        messageSpan.textContent = message;
+    } else {
+        console.error('Message span not found!');
+    }
+
+    // Resize window to expanded size with animation
+    // @ts-ignore - electronAPI is added via preload
+    window.electronAPI.resizeWindow(true);
+
+    // Show message with fade-in animation
+    goalFlashMessage.style.display = 'block';
+    goalFlashMessage.classList.remove('flash-exit');
+    goalFlashMessage.classList.add('flash-enter');
+
+    // Check if message is too long and needs scrolling
+    setTimeout(() => {
+        if (messageSpan) {
+            const containerWidth = goalFlashMessage.offsetWidth;
+            const textWidth = messageSpan.scrollWidth;
+
+            // If text is wider than container, add scrolling animation
+            if (textWidth > containerWidth) {
+                goalFlashMessage.classList.add('long-message');
+            } else {
+                goalFlashMessage.classList.remove('long-message');
+            }
+        }
+    }, 50); // Small delay to ensure DOM is updated
+
+    // Remove animation class after transition
+    setTimeout(() => {
+        goalFlashMessage.classList.remove('flash-enter');
+    }, 300);
+
+    // Auto-hide if specified (for welcome message)
+    if (autoHide) {
+        setTimeout(() => {
+            hideMessage();
+        }, 3000); // 3 seconds
+    }
+}
+
+/**
+ * Hide message with fade-out animation
+ */
+function hideMessage() {
+    if (!goalFlashMessage) return;
+
+    // Start window resize immediately for smooth transition
+    // @ts-ignore - electronAPI is added via preload
+    window.electronAPI.resizeWindow(false);
+
+    goalFlashMessage.classList.remove('flash-enter', 'long-message');
+    goalFlashMessage.classList.add('flash-exit');
+
+    setTimeout(() => {
+        goalFlashMessage.style.display = 'none';
+        goalFlashMessage.classList.remove('flash-exit');
+    }, 300);
+}
+
+/**
+ * Handle message display logic based on progress
+ * @param {number} progressPercent - Current progress percentage
+ * @param {boolean} forceUpdate - Force message update regardless of timing
+ */
+function handleFlashMessage(progressPercent, forceUpdate = false) {
+    // Show welcome message first if not shown today (auto-hide after 3 seconds)
+    if (!welcomeShownToday) {
+        const welcomeMsg = getWelcomeMessage();
+        showPersistentMessage(welcomeMsg, true); // true = auto-hide after 3 seconds
+        welcomeShownToday = true;
+
+        // After welcome message hides (4 seconds = 3s display + 1s gap), show progress message if needed
+        setTimeout(() => {
+            const category = getMessageCategory(progressPercent);
+            if (category) {
+                const message = getRandomMessage(category);
+                showPersistentMessage(message, false);
+                lastMessageTime = Date.now();
+            }
+        }, 4000); // 3s for welcome + 1s gap
+
+        return;
+    }
+
+    const category = getMessageCategory(progressPercent);
+
+    // No message needed if below 20%
+    if (!category) {
+        hideMessage();
+        return;
+    }
+
+    // Check if we should show a new message (or force update)
+    if (forceUpdate || shouldShowMessage(progressPercent)) {
+        const message = getRandomMessage(category);
+        showPersistentMessage(message, false); // false = persist until next message
+        lastMessageTime = Date.now();
+    }
+}
+
+/**
+ * Fetch and display screen time data
+ * @param {boolean} forceMessageUpdate - Force message update regardless of timing
+ */
+async function fetchScreenTimeData(forceMessageUpdate = false) {
     if (isLoading) return;
 
     try {
@@ -90,7 +324,7 @@ async function fetchScreenTimeData() {
         }
 
         // Update UI with data
-        updateScreenTimeUI(data);
+        updateScreenTimeUI(data, forceMessageUpdate);
 
     } catch (error) {
         console.error('Error fetching screen time:', error);
@@ -104,8 +338,9 @@ async function fetchScreenTimeData() {
 /**
  * Update UI with screen time data
  * @param {any} data - Screen time data from main process
+ * @param {boolean} forceMessageUpdate - Force message update regardless of timing
  */
-function updateScreenTimeUI(data) {
+function updateScreenTimeUI(data, forceMessageUpdate = false) {
     // Extract total minutes from screen time and break time
     const screenTimeMinutes = data.screenTime.totalMinutes || 0;
     const breakTimeMinutes = data.breakTime.totalMinutes || 0;
@@ -120,34 +355,13 @@ function updateScreenTimeUI(data) {
         breakTimeValue.textContent = formatBreakTime(breakTimeMinutes);
     }
 
-    // Update goal progress bar
+    // Calculate progress percentage
     const goalMinutes = currentGoal * 60;
-    const progressPercent = Math.min((screenTimeMinutes / goalMinutes) * 100, 100);
+    const progressPercent = (screenTimeMinutes / goalMinutes) * 100;
 
-    if (goalProgressFill) {
-        const newWidth = `${progressPercent}%`;
-        const currentWidth = goalProgressFill.style.width;
-
-        // Only add shimmer effect if width is actually changing
-        if (currentWidth !== newWidth) {
-            goalProgressFill.classList.add('transitioning');
-            goalProgressFill.style.width = newWidth;
-
-            // Remove transitioning class after animation completes
-            setTimeout(() => {
-                goalProgressFill.classList.remove('transitioning');
-            }, 500); // Match transition duration
-        }
-    }
-
-    // Show flash message when goal is reached (100%)
-    if (progressPercent >= 100) {
-        if (goalProgressBar) goalProgressBar.style.display = 'none';
-        if (goalFlashMessage) goalFlashMessage.style.display = 'block';
-    } else {
-        if (goalProgressBar) goalProgressBar.style.display = 'block';
-        if (goalFlashMessage) goalFlashMessage.style.display = 'none';
-    }
+    // REMOVED: Progress bar update logic - now using flash messages instead
+    // Handle flash message system
+    handleFlashMessage(progressPercent, forceMessageUpdate);
 
     // Hide error message
     if (errorMessage) errorMessage.style.display = 'none';
@@ -282,6 +496,15 @@ async function init() {
     // Load theme from settings
     await loadTheme();
 
+    // Fetch username for personalized messages
+    try {
+        // @ts-ignore - electronAPI is added via preload
+        username = await window.electronAPI.getUsername();
+    } catch (error) {
+        console.error('Error loading username:', error);
+        username = 'there'; // Fallback
+    }
+
     // Listen for theme changes from settings window
     // @ts-ignore - electronAPI is added via preload
     window.electronAPI.onThemeChanged((theme) => {
@@ -293,13 +516,12 @@ async function init() {
     // Listen for settings updates (e.g., goal changes) and refresh data
     // @ts-ignore - electronAPI is added via preload
     window.electronAPI.onSettingsUpdated((settings) => {
-        console.log('Settings updated, refreshing data...', settings);
         // Update goal if changed
         if (settings.goal) {
             currentGoal = settings.goal;
         }
-        // Refresh screen time data to update progress bar
-        fetchScreenTimeData();
+        // Refresh screen time data to update flash messages (force update)
+        fetchScreenTimeData(true);
     });
 
     // Check admin status

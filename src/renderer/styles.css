@@ -215,15 +215,17 @@ body {
     letter-spacing: 2px;
 }
 
-/* Goal Progress Bar */
+/* Goal Progress Container - Updated for Flash Messages */
 .goal-progress-container {
-    margin-top: 8px;
+    margin-top: 2px;
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 4px;
 }
 
+/* COMMENTED OUT - Progress bar replaced with flash messages
 .goal-progress-bar {
     width: 100%;
     height: 6px;
@@ -275,17 +277,75 @@ body {
     text-align: center;
     letter-spacing: 0.5px;
 }
+*/
 
-/* Goal Flash Message */
+/* Goal Flash Message - Subtle text only, no borders */
 .goal-flash-message {
     font-size: 8px;
     color: var(--accent-color);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 8px;
-    margin-top: -2px;
+    font-weight: 500;
+    text-align: center;
+    padding: 2px 4px;
+    margin: 6px auto 0 auto;
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    min-height: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    display: none;
+}
+
+.goal-flash-message.flash-enter {
+    animation: fadeInMessage 0.3s ease forwards;
+}
+
+.goal-flash-message.flash-exit {
+    animation: fadeOutMessage 0.3s ease forwards;
+}
+
+@keyframes fadeInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutMessage {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+}
+
+.goal-flash-message span {
+    display: inline-block;
+    line-height: 1.4;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    /* padding-right: 20px;  Space for smooth loop */
+}
+
+/* Scrolling animation for long messages */
+.goal-flash-message.long-message span {
+    animation: scrollMessage 8s linear infinite;
+}
+
+@keyframes scrollMessage {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
 /* Break Time - Smaller */
