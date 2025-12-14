@@ -9,9 +9,17 @@
 </head>
 <body>
     <div class="breakdown-window" data-theme="cyan">
-        <!-- Header -->
+        <!-- Header with Week Days and Date Picker -->
         <div class="breakdown-header">
             <h1 id="breakdown-title">Screen Time Breakdown</h1>
+
+            <!-- Week View Section (inline with header) -->
+            <div class="week-view-container">
+                <div class="week-days" id="week-days">
+                    <!-- Day buttons will be inserted here by JavaScript -->
+                </div>
+            </div>
+
             <div class="date-picker-container" id="date-picker-container">
                 <span class="calendar-icon">📅</span>
                 <span class="selected-date-text" id="selected-date-text">Today</span>
@@ -19,59 +27,55 @@
             </div>
         </div>
 
-        <!-- Week View Section -->
-        <div class="week-view-container">
-            <div class="week-days" id="week-days">
-                <!-- Day buttons will be inserted here by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Time Range Filter -->
-        <div class="time-range-filter">
-            <div class="time-inputs">
-                <div class="time-input-group">
-                    <label for="filter-start-hour">Start Time</label>
-                    <div class="time-picker">
-                        <select id="filter-start-hour" class="hour-select"></select>
-                        <span class="time-separator">:</span>
-                        <select id="filter-start-minute" class="minute-select">
-                            <option value="00">00</option>
-                            <option value="30">30</option>
-                        </select>
-                        <select id="filter-start-period" class="period-select">
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                        </select>
+        <!-- Time Filter and Summary Combined Row -->
+        <div class="controls-summary-row">
+            <!-- Time Range Filter -->
+            <div class="time-range-filter">
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="filter-start-hour">Start Time</label>
+                        <div class="time-picker">
+                            <select id="filter-start-hour" class="hour-select"></select>
+                            <span class="time-separator">:</span>
+                            <select id="filter-start-minute" class="minute-select">
+                                <option value="00">00</option>
+                                <option value="30">30</option>
+                            </select>
+                            <select id="filter-start-period" class="period-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="time-input-group">
-                    <label for="filter-end-hour">End Time</label>
-                    <div class="time-picker">
-                        <select id="filter-end-hour" class="hour-select"></select>
-                        <span class="time-separator">:</span>
-                        <select id="filter-end-minute" class="minute-select">
-                            <option value="00">00</option>
-                            <option value="30">30</option>
-                        </select>
-                        <select id="filter-end-period" class="period-select">
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                        </select>
+                    <div class="time-input-group">
+                        <label for="filter-end-hour">End Time</label>
+                        <div class="time-picker">
+                            <select id="filter-end-hour" class="hour-select"></select>
+                            <span class="time-separator">:</span>
+                            <select id="filter-end-minute" class="minute-select">
+                                <option value="00">00</option>
+                                <option value="30">30</option>
+                            </select>
+                            <select id="filter-end-period" class="period-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
                     </div>
+                    <button class="reset-filter-btn" id="reset-filter-btn">Reset</button>
                 </div>
-                <button class="reset-filter-btn" id="reset-filter-btn">Reset</button>
             </div>
-        </div>
 
-        <!-- Summary Section -->
-        <div class="breakdown-summary">
-            <div class="summary-item">
-                <span class="summary-label">Total Screen Time:</span>
-                <span class="summary-value" id="total-screen-time">0 min</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Total Break Time:</span>
-                <span class="summary-value" id="total-break-time">0 min</span>
+            <!-- Summary Section -->
+            <div class="breakdown-summary">
+                <div class="summary-item">
+                    <span class="summary-label">Total Screen Time:</span>
+                    <span class="summary-value" id="total-screen-time">0 min</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Break Time:</span>
+                    <span class="summary-value" id="total-break-time">0 min</span>
+                </div>
             </div>
         </div>
 
