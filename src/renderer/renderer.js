@@ -41,52 +41,11 @@ let lastMessageTime = 0; // Track when last message was shown
 let welcomeShownToday = false; // Track if welcome message shown today
 const MESSAGE_INTERVAL = 600000; // 10 minutes in milliseconds
 
-// Welcome messages (shown once per day with username)
-const WELCOME_MESSAGES = [
-    "Welcome back, {name}! 🌟",
-    "Good to see you, {name}! 👋",
-    "Hello {name}! Ready for a productive day? ✨",
-    "Hey {name}! Let's stay mindful today! 💪"
-];
-
-// Message pools by progress percentage (no username)
-const MESSAGES = {
-    '20-49': [
-        "You're off to a great start! 🚀",
-        "Productive vibes! ✨",
-        "Keep the momentum going! 💪"
-    ],
-    '50-60': [
-        "Halfway there! 📊",
-        "Time is ticking! ⏰",
-        "Still in the safe zone! 🌱"
-    ],
-    '60-70': [
-        "Solid progress! 👍",
-        "You're cruising! ✨",
-        "Digital balance looking good! ⚖️"
-    ],
-    '70-80': [
-        "Maybe time for a stretch? 🧘",
-        "Eyes need a break soon! 👀",
-        "Real world is calling! 🌍"
-    ],
-    '80-90': [
-        "Getting close to your limit! ⚡",
-        "Time to wrap things up? 📱➡️📴",
-        "Screen time limit approaching! ⚠️"
-    ],
-    '90-99': [
-        "Almost at your limit! 🛑",
-        "Time to log off soon! 👋",
-        "Final stretch! Make it count! ⏱️"
-    ],
-    '100+': [
-        "Goal reached! Time to unplug! 🎯",
-        "Screen time limit hit! 🚦",
-        "Well done staying mindful! ✅"
-    ]
-};
+// Loaded messages from JSON
+/** @type {string[]} */
+let WELCOME_MESSAGES = [];
+/** @type {Object.<string, string[]>} */
+let MESSAGES = {};
 
 /**
  * Format duration for screen time display (e.g., "11:09" or "00:00")
@@ -490,9 +449,45 @@ if (settingsBtn) {
 }
 
 /**
+ * Load messages from JSON file
+ * @returns {Promise<void>}
+ */
+async function loadMessages() {
+    try {
+        const response = await fetch('../../assets/messages.json');
+        if (!response.ok) {
+            throw new Error('Failed to load messages: ' + response.status);
+        }
+        const data = await response.json();
+
+        WELCOME_MESSAGES = data.welcomeMessages || [];
+        MESSAGES = data.progressMessages || {};
+
+        console.log('Messages loaded successfully');
+    } catch (error) {
+        console.error('Error loading messages:', error);
+
+        // Fallback to default messages if loading fails
+        WELCOME_MESSAGES = ["Welcome back, {name}! 🌟"];
+        MESSAGES = {
+            '20-49': ["You're off to a great start! 🚀"],
+            '50-60': ["Halfway there! 📊"],
+            '60-70': ["Solid progress! 👍"],
+            '70-80': ["Maybe time for a stretch? 🧘"],
+            '80-90': ["Getting close to your limit! ⚡"],
+            '90-99': ["Almost at your limit! 🛑"],
+            '100+': ["Goal reached! Time to unplug! 🎯"]
+        };
+    }
+}
+
+/**
  * Initialize the widget
  */
 async function init() {
+    // Load messages first
+    await loadMessages();
+
     // Load theme from settings
     await loadTheme();
 

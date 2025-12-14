@@ -1,0 +1,45 @@
+{
+  "welcomeMessages": [
+    "Welcome back, {name}! 🌟",
+    "Good to see you, {name}! 👋",
+    "Hello {name}! Ready for a productive day? ✨",
+    "Hey {name}! Let's stay mindful today! 💪"
+  ],
+  "progressMessages": {
+    "20-49": [
+      "You're off to a great start! 🚀",
+      "Productive vibes! ✨",
+      "Keep the momentum going! 💪"
+    ],
+    "50-60": [
+      "Halfway there! 📊",
+      "Time is ticking! ⏰",
+      "Still in the safe zone! 🌱"
+    ],
+    "60-70": [
+      "Solid progress! 👍",
+      "You're cruising! ✨",
+      "Digital balance looking good! ⚖️"
+    ],
+    "70-80": [
+      "Maybe time for a stretch? 🧘",
+      "Eyes need a break soon! 👀",
+      "Real world is calling! 🌍"
+    ],
+    "80-90": [
+      "Getting close to your limit! ⚡",
+      "Time to wrap things up? 📱➡️📴",
+      "Screen time limit approaching! ⚠️"
+    ],
+    "90-99": [
+      "Almost at your limit! 🛑",
+      "Time to log off soon! 👋",
+      "Final stretch! Make it count! ⏱️"
+    ],
+    "100+": [
+      "Goal reached! Time to unplug! 🎯",
+      "Screen time limit hit! 🚦",
+      "Well done staying mindful! ✅"
+    ]
+  }
+}
