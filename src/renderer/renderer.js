@@ -38,8 +38,9 @@ let currentGoal = 8; // Default goal in hours
 /** @type {string} */
 let username = 'there'; // Default fallback
 let lastMessageTime = 0; // Track when last message was shown
-let welcomeShownToday = false; // Track if welcome message shown today
+let welcomeShownToday = false; // Track if welcome message shown today (session-based, will be updated from localStorage)
 const MESSAGE_INTERVAL = 600000; // 10 minutes in milliseconds
+const WELCOME_STORAGE_KEY = 'lastWelcomeDate'; // LocalStorage key for welcome message date
 
 // Loaded messages from JSON
 /** @type {string[]} */
@@ -67,6 +68,35 @@ function formatBreakTime(totalMinutes) {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Check if welcome message was already shown today
+ * @returns {boolean} True if welcome was shown today
+ */
+function wasWelcomeShownToday() {
+    try {
+        const lastWelcomeDate = localStorage.getItem(WELCOME_STORAGE_KEY);
+        if (!lastWelcomeDate) return false;
+
+        const today = new Date().toDateString(); // e.g., "Mon Dec 14 2025"
+        return lastWelcomeDate === today;
+    } catch (error) {
+        console.error('Error checking welcome status:', error);
+        return false;
+    }
+}
+
+/**
+ * Mark welcome message as shown today
+ */
+function markWelcomeShown() {
+    try {
+        const today = new Date().toDateString();
+        localStorage.setItem(WELCOME_STORAGE_KEY, today);
+    } catch (error) {
+        console.error('Error saving welcome status:', error);
+    }
 }
 
 /**
@@ -213,11 +243,12 @@ function hideMessage() {
  * @param {boolean} forceUpdate - Force message update regardless of timing
  */
 function handleFlashMessage(progressPercent, forceUpdate = false) {
-    // Show welcome message first if not shown today (auto-hide after 3 seconds)
-    if (!welcomeShownToday) {
+    // Check if welcome should be shown (only once per day)
+    if (!welcomeShownToday && !wasWelcomeShownToday()) {
         const welcomeMsg = getWelcomeMessage();
         showPersistentMessage(welcomeMsg, true); // true = auto-hide after 3 seconds
         welcomeShownToday = true;
+        markWelcomeShown(); // Persist to localStorage
 
         // After welcome message hides (4 seconds = 3s display + 1s gap), show progress message if needed
         setTimeout(() => {
@@ -487,6 +518,9 @@ async function loadMessages() {
 async function init() {
     // Load messages first
     await loadMessages();
+
+    // Check if welcome was already shown today
+    welcomeShownToday = wasWelcomeShownToday();
 
     // Load theme from settings
     await loadTheme();
