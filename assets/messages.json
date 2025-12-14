@@ -3,43 +3,98 @@
     "Welcome back, {name}! 🌟",
     "Good to see you, {name}! 👋",
     "Hello {name}! Ready for a productive day? ✨",
-    "Hey {name}! Let's stay mindful today! 💪"
+    "Hey {name}! Let's stay mindful today! 💪",
+    "Rise and shine, {name}! Time to conquer the day! ☀️",
+    "What's up, {name}? Let's make today count! 🎯",
+    "Back in action, {name}! Stay focused! 🔥",
+    "{name} is in the house! Let's balance it out! ⚖️",
+    "Greetings, {name}! Your wellness journey continues! 🌈",
+    "Look who's here - it's {name}! Ready to rock? 🎸"
   ],
   "progressMessages": {
     "20-49": [
       "You're off to a great start! 🚀",
       "Productive vibes! ✨",
-      "Keep the momentum going! 💪"
+      "Keep the momentum going! 💪",
+      "Fresh and focused! Let's go! 🌅",
+      "Early bird energy! You got this! 🐦",
+      "Starting strong like a champion! 🏆",
+      "Your day is just beginning! 🎬",
+      "Plenty of time left! Stay awesome! ⭐",
+      "Looking good from the start! 👌",
+      "Energy levels: Maximum! 🔋"
     ],
     "50-60": [
       "Halfway there! 📊",
       "Time is ticking! ⏰",
-      "Still in the safe zone! 🌱"
+      "Still in the safe zone! 🌱",
+      "Perfectly balanced, as all things should be! ⚖️",
+      "Midway milestone reached! 🎯",
+      "You're cruising in the comfort zone! 🛤️",
+      "50% done, 50% to go! Let's pace it! 🏃",
+      "Sweet spot territory! 🍭",
+      "Smooth sailing so far! ⛵",
+      "Right on track! Keep it steady! 📍"
     ],
     "60-70": [
       "Solid progress! 👍",
       "You're cruising! ✨",
-      "Digital balance looking good! ⚖️"
+      "Digital balance looking good! ⚖️",
+      "Maintaining the vibe! 🎵",
+      "You're in the groove! 🕺",
+      "Steady as she goes! 🧭",
+      "Looking peachy! Keep it up! 🍑",
+      "Screen wisdom in action! 🦉",
+      "The sweet middle ground! 🎪",
+      "Balanced like a pro! 🤹"
     ],
     "70-80": [
       "Maybe time for a stretch? 🧘",
       "Eyes need a break soon! 👀",
-      "Real world is calling! 🌍"
+      "Real world is calling! 🌍",
+      "Time for some fresh air vibes! 🌬️",
+      "Nature is knocking! 🌳",
+      "Your eyeballs deserve a vacation! 🏝️",
+      "Legs could use a walk! 🚶",
+      "Sunshine misses you! ☀️",
+      "Hydration check! Time for water! 💧",
+      "Consider a mini digital detox? 🔌"
     ],
     "80-90": [
       "Getting close to your limit! ⚡",
       "Time to wrap things up? 📱➡️📴",
-      "Screen time limit approaching! ⚠️"
+      "Screen time limit approaching! ⚠️",
+      "Red zone ahead! Proceed carefully! 🚨",
+      "Final countdown mode activated! ⏳",
+      "Your pixels are running low! 🎮",
+      "Time's almost up, friend! ⏰",
+      "The finish line is near! 🏁",
+      "Wrap it up before it's game over! 🎯",
+      "Last call for screen time! 📢"
     ],
     "90-99": [
       "Almost at your limit! 🛑",
       "Time to log off soon! 👋",
-      "Final stretch! Make it count! ⏱️"
+      "Final stretch! Make it count! ⏱️",
+      "Danger zone activated! 🚧",
+      "Literally seconds away! Wrap up! ⚠️",
+      "Your screen is begging for a break! 😅",
+      "Last few pixels remaining! 🎨",
+      "Time to say goodbye to your screen! 💔",
+      "Exit strategy needed ASAP! 🚪",
+      "The off button is your friend now! 🔴"
     ],
     "100+": [
       "Goal reached! Time to unplug! 🎯",
       "Screen time limit hit! 🚦",
-      "Well done staying mindful! ✅"
+      "Well done staying mindful! ✅",
+      "Mission accomplished! Go touch grass! 🌿",
+      "Achievement unlocked: Digital Discipline! 🏅",
+      "You've maxed out! Time to log out! 💯",
+      "Limit reached! Your eyes say thank you! 😌",
+      "Full battery of screen time used! 🔋❌",
+      "That's a wrap! Go live IRL now! 🎬",
+      "100% complete! Real life awaits! 🌎"
     ]
   }
 }
