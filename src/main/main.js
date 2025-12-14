@@ -259,8 +259,17 @@ function createTray() {
                 }
             }
         });
+
+        logger.info('Tray icon setup completed successfully');
     } catch (error) {
-        console.log('Tray icon not created (icon file may not exist yet)');
+        logger.error('Failed to create tray icon!');
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack : '';
+        logger.error('Error details: ' + errorMessage);
+        if (errorStack) {
+            logger.error('Stack trace: ' + errorStack);
+        }
+        console.error('Tray icon error:', error);
     }
 }
 
