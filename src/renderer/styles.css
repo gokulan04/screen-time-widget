@@ -336,7 +336,7 @@ body {
 
 /* Scrolling animation for long messages */
 .goal-flash-message.long-message span {
-    animation: scrollMessage 8s linear infinite;
+    animation: scrollMessage 10s linear infinite 1s;
 }
 
 @keyframes scrollMessage {
