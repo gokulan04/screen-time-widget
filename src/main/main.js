@@ -4,6 +4,7 @@ const fs = require('fs');
 const { getScreenTimeData, getScreenTimeBreakdown } = require('./powershell-bridge');
 const { loadSettings, saveSettings } = require('./settings-manager');
 const logger = require('./logger');
+const os = require('os');
 
 let mainWindow = null;
 let breakdownWindow = null;
@@ -401,6 +402,30 @@ function setupIPC() {
         } catch (error) {
             logger.error('IPC: Error saving settings', error);
             return { success: false, error: error.message };
+        }
+    });
+
+    ipcMain.handle('get-username', async () => {
+        try {
+            // Try to get the display name (e.g., "Gokulan G M") from Windows registry
+            // This is the "friendly name" shown on the lock screen
+            const { execSync } = require('child_process');
+            const command = 'powershell -NoProfile -Command "$user = $env:USERNAME; $data = Get-ItemProperty -Path \'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\SessionData\\*\' | Where-Object { $_.LoggedOnUser -like \\"*$user*\\" } | Select-Object -First 1; if ($data.LoggedOnDisplayName) { $data.LoggedOnDisplayName } else { $user }"';
+            const displayName = execSync(command, { encoding: 'utf8' }).trim();
+
+            if (displayName) {
+                logger.info('Fetched display name: ' + displayName);
+                return displayName;
+            }
+
+            return os.userInfo().username;
+        } catch (error) {
+            logger.error('Error fetching display name:', error);
+            try {
+                return os.userInfo().username;
+            } catch (innerError) {
+                return 'there';
+            }
         }
     });
 }

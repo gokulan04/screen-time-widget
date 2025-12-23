@@ -205,16 +205,16 @@ function showPersistentMessage(message, autoHide = false) {
         }
     }, 50); // Small delay to ensure DOM is updated
 
-    // Remove animation class after transition
+    // Remove animation class after transition (500ms delay + 2300ms duration)
     setTimeout(() => {
         goalFlashMessage.classList.remove('flash-enter');
-    }, 300);
+    }, 2800);
 
     // Auto-hide if specified (for welcome message)
     if (autoHide) {
         setTimeout(() => {
             hideMessage();
-        }, 3000); // 3 seconds
+        }, 8000); // Increased from 5s to 8s for slower transition
     }
 }
 
@@ -234,7 +234,7 @@ function hideMessage() {
     setTimeout(() => {
         goalFlashMessage.style.display = 'none';
         goalFlashMessage.classList.remove('flash-exit');
-    }, 300);
+    }, 2300);
 }
 
 /**
