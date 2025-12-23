@@ -366,6 +366,24 @@ function setupIPC() {
         createSettingsWindow();
     });
 
+    ipcMain.on('resize-window', (event, showMessage) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            const windowWidth = 200;
+            const windowHeight = showMessage ? 160 : 130;
+
+            // Get current position to maintain it
+            const [x, y] = mainWindow.getPosition();
+
+            // Update size while keeping the same x, y coordinates
+            mainWindow.setSize(windowWidth, windowHeight);
+
+            // Explicitly set position again just in case Electron tries to center it or something
+            mainWindow.setPosition(x, y);
+
+            logger.info('IPC: Window resized', { showMessage, windowWidth, windowHeight, x, y });
+        }
+    });
+
     ipcMain.handle('get-settings', async () => {
         logger.info('=== IPC: get-settings requested ===');
         try {
